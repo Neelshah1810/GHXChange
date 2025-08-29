@@ -1,0 +1,53 @@
+I have a backend in Python (Streamlit) that manages a blockchain-based Green Hydrogen Credit System (with user roles: producer, buyer, auditor).  
+Now, I want you to create a **frontend in React.js (with TailwindCSS + shadcn/ui + lucide-react)** that connects to my backend using REST APIs.  
+
+The frontend should include:  
+
+### 🔐 Authentication
+- Login page with role-based access: **Producer, Buyer, Auditor**.  
+- Store login state in localStorage/session.  
+
+### 📊 Dashboards
+- **Producer Dashboard**:  
+  - Show balance of hydrogen credits.  
+  - Button to issue new credits.  
+  - Transaction history table.  
+  - Profile info (digital identity).  
+
+- **Buyer Dashboard**:  
+  - Show current balance of credits.  
+  - Option to purchase credits from producers.  
+  - Transaction history table.  
+  - Compliance certificates section.  
+
+- **Auditor Dashboard**:  
+  - View all issued/retired credits.  
+  - Verify transactions and prevent double counting.  
+  - Exportable reports (CSV/PDF).  
+
+### 📈 Features
+- Navigation bar with role-based menus.  
+- Responsive layout with TailwindCSS.  
+- Reusable components for tables, cards, forms.  
+- API integration (using Axios) with backend endpoints:  
+  - `/login` → login with username, password, role.  
+  - `/balance` → fetch user’s hydrogen credit balance.  
+  - `/transactions` → fetch transaction history.  
+  - `/issue` → issue credits (producer).  
+  - `/purchase` → buy credits (buyer).  
+  - `/audit` → fetch all records (auditor).  
+
+### 📱 Tech Stack
+- React + Vite  
+- TailwindCSS  
+- shadcn/ui for modern UI components  
+- Axios for API calls  
+- React Router for role-based routing  
+
+### ✅ Deliverables
+- Fully working React frontend with role-based login.  
+- Different dashboards for Producer, Buyer, Auditor.  
+- Integrated transaction history & balance pages.  
+- Ready to deploy on Replit.  
+
+Please generate the **entire React project code** (with proper folder structure) so I can paste it into Replit and run it directly.
