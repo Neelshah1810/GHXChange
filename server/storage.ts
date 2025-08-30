@@ -1,4 +1,4 @@
-import { type User, type InsertUser, type Wallet, type InsertWallet, type Transaction, type InsertTransaction, type Certificate, type InsertCertificate } from "@shared/schema";
+import { type User, type InsertUser, type Wallet, type InsertWallet, type Transaction, type InsertTransaction, type Certificate, type InsertCertificate, type RegisterData } from "@shared/schema";
 import { randomUUID } from "crypto";
 
 export interface IStorage {
@@ -7,6 +7,7 @@ export interface IStorage {
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   authenticateUser(username: string, password: string, role: string): Promise<User | null>;
+  registerUser?(userData: RegisterData): Promise<{ user: User; wallet: Wallet }>;
 
   // Wallet operations
   getWallet(address: string): Promise<Wallet | undefined>;
@@ -26,6 +27,7 @@ export interface IStorage {
   getCertificatesByProducer(producerAddress: string): Promise<Certificate[]>;
   getAllCertificates(): Promise<Certificate[]>;
   createCertificate(certificate: InsertCertificate): Promise<Certificate>;
+  updateCertificateStatus(certificateId: string, status: string): Promise<void>;
 
   // System stats
   getSystemStats(): Promise<{
@@ -150,7 +152,8 @@ export class MemStorage implements IStorage {
     const user: User = { 
       ...insertUser, 
       id,
-      walletAddress: `0x${Math.random().toString(16).substring(2, 42).padStart(40, '0')}`
+      walletAddress: `0x${Math.random().toString(16).substring(2, 42).padStart(40, '0')}`,
+      name: insertUser.name || null
     };
     this.users.set(id, user);
     return user;
@@ -162,6 +165,41 @@ export class MemStorage implements IStorage {
       return user;
     }
     return null;
+  }
+
+  async registerUser(userData: RegisterData): Promise<{ user: User; wallet: Wallet }> {
+    // Check if user already exists
+    const existingUser = await this.getUserByUsername(userData.username);
+    if (existingUser) {
+      throw new Error('Username already exists');
+    }
+
+    // Generate wallet address
+    const walletAddress = `0x${Math.random().toString(16).substring(2, 42).padStart(40, '0')}`;
+    
+    // Create user
+    const user: User = {
+      id: randomUUID(),
+      username: userData.username,
+      password: userData.password, // In memory storage doesn't hash passwords
+      role: userData.role,
+      name: userData.name,
+      walletAddress
+    };
+    this.users.set(user.id, user);
+
+    // Create wallet
+    const wallet: Wallet = {
+      id: randomUUID(),
+      address: walletAddress,
+      privateKey: `0x${Math.random().toString(16).substring(2).padStart(64, '0')}`,
+      name: userData.name,
+      type: userData.role,
+      balance: 0
+    };
+    this.wallets.set(wallet.address, wallet);
+
+    return { user, wallet };
   }
 
   async getWallet(address: string): Promise<Wallet | undefined> {
@@ -212,7 +250,8 @@ export class MemStorage implements IStorage {
       ...insertTransaction,
       id,
       timestamp: new Date(),
-      status: "confirmed"
+      status: "confirmed",
+      data: insertTransaction.data || null
     };
     this.transactions.set(transaction.txHash, transaction);
     return transaction;
@@ -244,6 +283,13 @@ export class MemStorage implements IStorage {
     };
     this.certificates.set(certificate.certificateId, certificate);
     return certificate;
+  }
+
+  async updateCertificateStatus(certificateId: string, status: string): Promise<void> {
+    const certificate = this.certificates.get(certificateId);
+    if (certificate) {
+      certificate.status = status;
+    }
   }
 
   async getSystemStats(): Promise<{

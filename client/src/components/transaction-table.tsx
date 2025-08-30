@@ -1,7 +1,11 @@
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Separator } from "@/components/ui/separator";
 import { Transaction } from "@shared/schema";
+import { Eye, Hash, Calendar, ArrowRightLeft, User } from "lucide-react";
 
 interface TransactionTableProps {
   title: string;
@@ -172,14 +176,174 @@ export function TransactionTable({
                             Verify
                           </Button>
                         ) : (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => onViewTransaction?.(transaction.txHash)}
-                            data-testid={`button-view-${transaction.id}`}
-                          >
-                            View
-                          </Button>
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                data-testid={`button-view-${transaction.id}`}
+                              >
+                                <Eye className="w-4 h-4 mr-1" />
+                                View
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                              <DialogHeader>
+                                <DialogTitle className="flex items-center text-lg">
+                                  <Hash className="w-5 h-5 mr-2 text-primary" />
+                                  Transaction Details
+                                </DialogTitle>
+                              </DialogHeader>
+                              <div className="space-y-6 pb-6">
+                                {/* Transaction Overview */}
+                                <div className="grid grid-cols-2 gap-4">
+                                  <Card>
+                                    <CardContent className="p-4">
+                                      <div className="text-center">
+                                        <p className="text-2xl font-bold text-foreground">{transaction.amount} GHC</p>
+                                        <p className="text-sm text-muted-foreground">Amount</p>
+                                      </div>
+                                    </CardContent>
+                                  </Card>
+                                  <Card>
+                                    <CardContent className="p-4">
+                                      <div className="text-center">
+                                        <Badge className={getStatusColor(transaction.status!)}>
+                                          {transaction.status?.toUpperCase()}
+                                        </Badge>
+                                        <p className="text-sm text-muted-foreground mt-2">Status</p>
+                                      </div>
+                                    </CardContent>
+                                  </Card>
+                                </div>
+
+                                <Separator />
+
+                                {/* Transaction Details */}
+                                <div className="space-y-4">
+                                  <h3 className="text-lg font-semibold text-foreground">Transaction Information</h3>
+                                  
+                                  <div className="space-y-3">
+                                    <div className="flex items-center space-x-3 p-3 bg-muted rounded-lg">
+                                      <Hash className="w-5 h-5 text-muted-foreground" />
+                                      <div className="flex-1">
+                                        <p className="text-sm text-muted-foreground">Transaction Hash</p>
+                                        <p className="font-mono text-sm text-foreground break-all">{transaction.txHash}</p>
+                                      </div>
+                                    </div>
+
+                                    <div className="flex items-center space-x-3 p-3 bg-muted rounded-lg">
+                                      <ArrowRightLeft className="w-5 h-5 text-muted-foreground" />
+                                      <div className="flex-1">
+                                        <p className="text-sm text-muted-foreground">Transaction Type</p>
+                                        <p className="font-semibold text-foreground capitalize">{transaction.txType}</p>
+                                      </div>
+                                    </div>
+
+                                    <div className="flex items-center space-x-3 p-3 bg-muted rounded-lg">
+                                      <Calendar className="w-5 h-5 text-muted-foreground" />
+                                      <div className="flex-1">
+                                        <p className="text-sm text-muted-foreground">Timestamp</p>
+                                        <p className="font-semibold text-foreground">
+                                          {new Date(transaction.timestamp!).toLocaleString()}
+                                        </p>
+                                      </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                      <div className="flex items-start space-x-3 p-3 bg-muted rounded-lg">
+                                        <User className="w-5 h-5 text-muted-foreground mt-0.5" />
+                                        <div className="flex-1">
+                                          <p className="text-sm text-muted-foreground">From Address</p>
+                                          <p className="font-mono text-sm text-foreground break-all">
+                                            {transaction.fromAddress === "SYSTEM" 
+                                              ? "SYSTEM" 
+                                              : transaction.fromAddress
+                                            }
+                                          </p>
+                                        </div>
+                                      </div>
+
+                                      <div className="flex items-start space-x-3 p-3 bg-muted rounded-lg">
+                                        <User className="w-5 h-5 text-muted-foreground mt-0.5" />
+                                        <div className="flex-1">
+                                          <p className="text-sm text-muted-foreground">To Address</p>
+                                          <p className="font-mono text-sm text-foreground break-all">
+                                            {transaction.toAddress === "0x000000000000000000000000000000000000dEaD" 
+                                              ? "Burn Address (0x000000000000000000000000000000000000dEaD)" 
+                                              : transaction.toAddress
+                                            }
+                                          </p>
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                    {transaction.signature && (
+                                      <div className="flex items-start space-x-3 p-3 bg-muted rounded-lg">
+                                        <Hash className="w-5 h-5 text-muted-foreground mt-0.5" />
+                                        <div className="flex-1">
+                                          <p className="text-sm text-muted-foreground">Digital Signature</p>
+                                          <p className="font-mono text-sm text-foreground break-all">
+                                            {transaction.signature}
+                                          </p>
+                                        </div>
+                                      </div>
+                                    )}
+
+                                    {transaction.data && (
+                                      <div className="flex items-start space-x-3 p-3 bg-muted rounded-lg">
+                                        <Hash className="w-5 h-5 text-muted-foreground mt-0.5" />
+                                        <div className="flex-1">
+                                          <p className="text-sm text-muted-foreground">Additional Data</p>
+                                          <pre className="text-xs text-foreground bg-background p-2 rounded mt-1 overflow-x-auto">
+                                            {JSON.stringify(transaction.data, null, 2)}
+                                          </pre>
+                                        </div>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+
+                                {/* Transaction Impact */}
+                                {(transaction.txType === 'retire' || transaction.txType === 'issue') && (
+                                  <>
+                                    <Separator />
+                                    <div>
+                                      <h3 className="text-lg font-semibold text-foreground mb-3">Environmental Impact</h3>
+                                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <Card className="bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800">
+                                          <CardContent className="p-4 text-center">
+                                            <p className="text-xl font-bold text-green-700 dark:text-green-300">
+                                              {transaction.txType === 'retire' 
+                                                ? `${(transaction.amount * 10.4).toFixed(1)} kg` 
+                                                : `+${(transaction.amount * 10.4).toFixed(1)} kg`
+                                              }
+                                            </p>
+                                            <p className="text-sm text-green-600 dark:text-green-400">
+                                              CO₂ {transaction.txType === 'retire' ? 'Emissions Avoided' : 'Potential Savings'}
+                                            </p>
+                                          </CardContent>
+                                        </Card>
+                                        <Card className="bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
+                                          <CardContent className="p-4 text-center">
+                                            <p className="text-xl font-bold text-blue-700 dark:text-blue-300">
+                                              {transaction.txType === 'retire' 
+                                                ? `${(transaction.amount * 0.033).toFixed(2)} MWh` 
+                                                : `+${(transaction.amount * 0.033).toFixed(2)} MWh`
+                                              }
+                                            </p>
+                                            <p className="text-sm text-blue-600 dark:text-blue-400">
+                                              {transaction.txType === 'retire' ? 'Green Energy Used' : 'Green Energy Certified'}
+                                            </p>
+                                          </CardContent>
+                                        </Card>
+                                      </div>
+                                    </div>
+                                  </>
+                                )}
+                              </div>
+                            </DialogContent>
+                          </Dialog>
                         )}
                       </td>
                     )}

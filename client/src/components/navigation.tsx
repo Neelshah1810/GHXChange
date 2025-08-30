@@ -5,9 +5,10 @@ import { useLocation } from "wouter";
 
 interface NavigationProps {
   role: 'producer' | 'buyer' | 'auditor';
+  currentSection?: string;
 }
 
-export function Navigation({ role }: NavigationProps) {
+export function Navigation({ role, currentSection = 'dashboard' }: NavigationProps) {
   const { user, logout } = useAuth();
   const [, setLocation] = useLocation();
 
@@ -20,21 +21,21 @@ export function Navigation({ role }: NavigationProps) {
     switch (role) {
       case 'producer':
         return [
-          { label: 'Dashboard', active: true },
-          { label: 'Production', active: false },
-          { label: 'Certificates', active: false }
+          { label: 'Dashboard', route: '/producer', section: 'dashboard' },
+          { label: 'Production', route: '/producer/production', section: 'production' },
+          { label: 'Certificates', route: '/producer/certificates', section: 'certificates' }
         ];
       case 'buyer':
         return [
-          { label: 'Dashboard', active: true },
-          { label: 'Marketplace', active: false },
-          { label: 'Compliance', active: false }
+          { label: 'Dashboard', route: '/buyer', section: 'dashboard' },
+          { label: 'Marketplace', route: '/buyer/marketplace', section: 'marketplace' },
+          { label: 'Compliance', route: '/buyer/compliance', section: 'compliance' }
         ];
       case 'auditor':
         return [
-          { label: 'Dashboard', active: true },
-          { label: 'Verification', active: false },
-          { label: 'Reports', active: false }
+          { label: 'Dashboard', route: '/auditor', section: 'dashboard' },
+          { label: 'Verification', route: '/auditor/verification', section: 'verification' },
+          { label: 'Reports', route: '/auditor/reports', section: 'reports' }
         ];
       default:
         return [];
@@ -58,10 +59,11 @@ export function Navigation({ role }: NavigationProps) {
               {getNavItems().map((item, index) => (
                 <button
                   key={index}
-                  className={`px-4 py-2 text-sm font-medium rounded-md ${
-                    item.active
+                  onClick={() => setLocation(item.route)}
+                  className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                    currentSection === item.section
                       ? 'text-primary bg-primary/10'
-                      : 'text-muted-foreground hover:text-foreground'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-muted'
                   }`}
                   data-testid={`nav-${item.label.toLowerCase()}`}
                 >

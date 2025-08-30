@@ -1,0 +1,846 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Green Hydrogen Credit System - React Frontend Mockup</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    borderRadius: {
+                        lg: "var(--radius)",
+                        md: "calc(var(--radius) - 2px)",
+                        sm: "calc(var(--radius) - 4px)",
+                    },
+                    colors: {
+                        background: "var(--background)",
+                        foreground: "var(--foreground)",
+                        card: {
+                            DEFAULT: "var(--card)",
+                            foreground: "var(--card-foreground)",
+                        },
+                        popover: {
+                            DEFAULT: "var(--popover)",
+                            foreground: "var(--popover-foreground)",
+                        },
+                        primary: {
+                            DEFAULT: "var(--primary)",
+                            foreground: "var(--primary-foreground)",
+                        },
+                        secondary: {
+                            DEFAULT: "var(--secondary)",
+                            foreground: "var(--secondary-foreground)",
+                        },
+                        muted: {
+                            DEFAULT: "var(--muted)",
+                            foreground: "var(--muted-foreground)",
+                        },
+                        accent: {
+                            DEFAULT: "var(--accent)",
+                            foreground: "var(--accent-foreground)",
+                        },
+                        destructive: {
+                            DEFAULT: "var(--destructive)",
+                            foreground: "var(--destructive-foreground)",
+                        },
+                        border: "var(--border)",
+                        input: "var(--input)",
+                        ring: "var(--ring)",
+                        chart: {
+                            "1": "var(--chart-1)",
+                            "2": "var(--chart-2)",
+                            "3": "var(--chart-3)",
+                            "4": "var(--chart-4)",
+                            "5": "var(--chart-5)",
+                        }
+                    },
+                    fontFamily: {
+                        sans: ["Inter", "system-ui", "sans-serif"],
+                    }
+                },
+            }
+        };
+    </script>
+    <style>
+        :root {
+            --background: hsl(0 0% 100%);
+            --foreground: hsl(222.2 84% 4.9%);
+            --card: hsl(0 0% 100%);
+            --card-foreground: hsl(222.2 84% 4.9%);
+            --popover: hsl(0 0% 100%);
+            --popover-foreground: hsl(222.2 84% 4.9%);
+            --primary: hsl(142.1 76.2% 36.3%);
+            --primary-foreground: hsl(355.7 100% 97.3%);
+            --secondary: hsl(210 40% 96%);
+            --secondary-foreground: hsl(222.2 84% 4.9%);
+            --muted: hsl(210 40% 96%);
+            --muted-foreground: hsl(215.4 16.3% 46.9%);
+            --accent: hsl(210 40% 96%);
+            --accent-foreground: hsl(222.2 84% 4.9%);
+            --destructive: hsl(0 84.2% 60.2%);
+            --destructive-foreground: hsl(210 40% 98%);
+            --border: hsl(214.3 31.8% 91.4%);
+            --input: hsl(214.3 31.8% 91.4%);
+            --ring: hsl(142.1 76.2% 36.3%);
+            --chart-1: hsl(12 76% 61%);
+            --chart-2: hsl(173 58% 39%);
+            --chart-3: hsl(197 37% 24%);
+            --chart-4: hsl(43 74% 66%);
+            --chart-5: hsl(27 87% 67%);
+            --radius: 0.5rem;
+        }
+        
+        .dark {
+            --background: hsl(222.2 84% 4.9%);
+            --foreground: hsl(210 40% 98%);
+            --card: hsl(222.2 84% 4.9%);
+            --card-foreground: hsl(210 40% 98%);
+            --popover: hsl(222.2 84% 4.9%);
+            --popover-foreground: hsl(210 40% 98%);
+            --primary: hsl(142.1 70.6% 45.3%);
+            --primary-foreground: hsl(144.9 80.4% 10%);
+            --secondary: hsl(217.2 32.6% 17.5%);
+            --secondary-foreground: hsl(210 40% 98%);
+            --muted: hsl(217.2 32.6% 17.5%);
+            --muted-foreground: hsl(215 20.2% 65.1%);
+            --accent: hsl(217.2 32.6% 17.5%);
+            --accent-foreground: hsl(210 40% 98%);
+            --destructive: hsl(0 62.8% 30.6%);
+            --destructive-foreground: hsl(210 40% 98%);
+            --border: hsl(217.2 32.6% 17.5%);
+            --input: hsl(217.2 32.6% 17.5%);
+            --ring: hsl(142.1 70.6% 45.3%);
+        }
+
+        .role-producer { --primary: hsl(142.1 76.2% 36.3%); }
+        .role-buyer { --primary: hsl(221.2 83.2% 53.3%); }
+        .role-auditor { --primary: hsl(262.1 83.3% 57.8%); }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+
+        .view {
+            display: none;
+        }
+        .view.active {
+            display: block;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    </style>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+</head>
+<body class="bg-background text-foreground">
+    <!-- Login View -->
+    <div id="login-view" class="view active">
+        <div class="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5 flex items-center justify-center p-4">
+            <!-- Green hydrogen production facility background -->
+            <div class="absolute inset-0 z-0">
+                <img src="https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&h=1080" alt="Green hydrogen production facility" class="w-full h-full object-cover opacity-10" />
+            </div>
+            
+            <div class="bg-card border border-border rounded-lg shadow-2xl p-8 w-full max-w-md relative z-10">
+                <div class="text-center mb-8">
+                    <div class="mx-auto w-16 h-16 bg-primary rounded-full flex items-center justify-center mb-4">
+                        <i data-lucide="leaf" class="w-8 h-8 text-primary-foreground"></i>
+                    </div>
+                    <h1 class="text-2xl font-bold text-foreground">Green Hydrogen Credits</h1>
+                    <p class="text-muted-foreground mt-2">Blockchain-based certification and trading system</p>
+                </div>
+
+                <form class="space-y-6">
+                    <div class="space-y-2">
+                        <label class="text-sm font-medium text-foreground">Username</label>
+                        <input type="text" placeholder="Enter your username" class="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent" />
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-sm font-medium text-foreground">Password</label>
+                        <input type="password" placeholder="Enter your password" class="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent" />
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-sm font-medium text-foreground">Role</label>
+                        <select class="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent">
+                            <option value="producer">Producer</option>
+                            <option value="buyer">Buyer</option>
+                            <option value="auditor">Auditor</option>
+                        </select>
+                    </div>
+
+                    <button type="button" onclick="showDashboard('producer')" class="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium py-2.5 px-4 rounded-md transition-colors duration-200">
+                        Sign In
+                    </button>
+                </form>
+
+                <div class="mt-6 text-center">
+                    <p class="text-sm text-muted-foreground">
+                        Need access? Contact your system administrator
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Producer Dashboard -->
+    <div id="producer-view" class="view role-producer">
+        <!-- Navigation -->
+        <nav class="bg-card border-b border-border">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <div class="flex items-center space-x-4">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                                <i data-lucide="leaf" class="w-5 h-5 text-primary-foreground"></i>
+                            </div>
+                            <span class="font-semibold text-foreground">GHC System</span>
+                        </div>
+                        <div class="hidden md:flex space-x-1">
+                            <button class="px-4 py-2 text-sm font-medium text-primary bg-primary/10 rounded-md">Dashboard</button>
+                            <button class="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground rounded-md">Production</button>
+                            <button class="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground rounded-md">Certificates</button>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <span class="text-sm text-muted-foreground">Producer</span>
+                        <button onclick="showLogin()" class="text-sm text-muted-foreground hover:text-foreground">Sign Out</button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- Header -->
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold text-foreground">Producer Dashboard</h1>
+                <p class="text-muted-foreground mt-2">Manage your green hydrogen production and credits</p>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="bg-card border border-border rounded-lg p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-muted-foreground">Total Credits</p>
+                            <p class="text-2xl font-bold text-foreground">1,247 GHC</p>
+                        </div>
+                        <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                            <i data-lucide="coins" class="w-6 h-6 text-primary"></i>
+                        </div>
+                    </div>
+                    <p class="text-xs text-green-600 mt-2">+12% from last month</p>
+                </div>
+
+                <div class="bg-card border border-border rounded-lg p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-muted-foreground">H₂ Produced</p>
+                            <p class="text-2xl font-bold text-foreground">2,847 kg</p>
+                        </div>
+                        <div class="w-12 h-12 bg-blue-500/10 rounded-full flex items-center justify-center">
+                            <i data-lucide="flask-conical" class="w-6 h-6 text-blue-500"></i>
+                        </div>
+                    </div>
+                    <p class="text-xs text-green-600 mt-2">+8% from last month</p>
+                </div>
+
+                <div class="bg-card border border-border rounded-lg p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-muted-foreground">Certificates</p>
+                            <p class="text-2xl font-bold text-foreground">23</p>
+                        </div>
+                        <div class="w-12 h-12 bg-purple-500/10 rounded-full flex items-center justify-center">
+                            <i data-lucide="award" class="w-6 h-6 text-purple-500"></i>
+                        </div>
+                    </div>
+                    <p class="text-xs text-muted-foreground mt-2">Valid certificates</p>
+                </div>
+
+                <div class="bg-card border border-border rounded-lg p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-muted-foreground">Revenue</p>
+                            <p class="text-2xl font-bold text-foreground">$47,291</p>
+                        </div>
+                        <div class="w-12 h-12 bg-green-500/10 rounded-full flex items-center justify-center">
+                            <i data-lucide="dollar-sign" class="w-6 h-6 text-green-500"></i>
+                        </div>
+                    </div>
+                    <p class="text-xs text-green-600 mt-2">+15% from last month</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Issue Credits Form -->
+                <div class="lg:col-span-1">
+                    <div class="bg-card border border-border rounded-lg p-6">
+                        <h3 class="text-lg font-semibold text-foreground mb-4">Issue New Credits</h3>
+                        <form class="space-y-4">
+                            <div>
+                                <label class="text-sm font-medium text-foreground">Hydrogen Produced (kg)</label>
+                                <input type="number" placeholder="0" class="w-full mt-1 px-3 py-2 border border-input rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent" />
+                            </div>
+                            <div>
+                                <label class="text-sm font-medium text-foreground">Energy Source</label>
+                                <select class="w-full mt-1 px-3 py-2 border border-input rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent">
+                                    <option>Solar</option>
+                                    <option>Wind</option>
+                                    <option>Hydro</option>
+                                    <option>Mixed Renewable</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-sm font-medium text-foreground">Location</label>
+                                <input type="text" placeholder="Production facility location" class="w-full mt-1 px-3 py-2 border border-input rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent" />
+                            </div>
+                            <button type="button" class="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium py-2.5 px-4 rounded-md transition-colors duration-200">
+                                Issue Credits
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Recent Transactions -->
+                <div class="lg:col-span-2">
+                    <div class="bg-card border border-border rounded-lg p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-foreground">Recent Transactions</h3>
+                            <button class="text-sm text-primary hover:text-primary/80">View All</button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead>
+                                    <tr class="border-b border-border">
+                                        <th class="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Date</th>
+                                        <th class="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Type</th>
+                                        <th class="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Amount</th>
+                                        <th class="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="border-b border-border">
+                                        <td class="py-3 px-4 text-sm text-foreground">Dec 15, 2024</td>
+                                        <td class="py-3 px-4 text-sm text-foreground">Issue</td>
+                                        <td class="py-3 px-4 text-sm text-foreground">+150 GHC</td>
+                                        <td class="py-3 px-4"><span class="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">Confirmed</span></td>
+                                    </tr>
+                                    <tr class="border-b border-border">
+                                        <td class="py-3 px-4 text-sm text-foreground">Dec 14, 2024</td>
+                                        <td class="py-3 px-4 text-sm text-foreground">Transfer</td>
+                                        <td class="py-3 px-4 text-sm text-foreground">-75 GHC</td>
+                                        <td class="py-3 px-4"><span class="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">Confirmed</span></td>
+                                    </tr>
+                                    <tr class="border-b border-border">
+                                        <td class="py-3 px-4 text-sm text-foreground">Dec 13, 2024</td>
+                                        <td class="py-3 px-4 text-sm text-foreground">Issue</td>
+                                        <td class="py-3 px-4 text-sm text-foreground">+200 GHC</td>
+                                        <td class="py-3 px-4"><span class="px-2 py-1 text-xs bg-yellow-100 text-yellow-800 rounded-full">Pending</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Buyer Dashboard -->
+    <div id="buyer-view" class="view role-buyer">
+        <!-- Navigation -->
+        <nav class="bg-card border-b border-border">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <div class="flex items-center space-x-4">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                                <i data-lucide="leaf" class="w-5 h-5 text-primary-foreground"></i>
+                            </div>
+                            <span class="font-semibold text-foreground">GHC System</span>
+                        </div>
+                        <div class="hidden md:flex space-x-1">
+                            <button class="px-4 py-2 text-sm font-medium text-primary bg-primary/10 rounded-md">Dashboard</button>
+                            <button class="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground rounded-md">Marketplace</button>
+                            <button class="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground rounded-md">Compliance</button>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <span class="text-sm text-muted-foreground">Buyer</span>
+                        <button onclick="showLogin()" class="text-sm text-muted-foreground hover:text-foreground">Sign Out</button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- Header -->
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold text-foreground">Buyer Dashboard</h1>
+                <p class="text-muted-foreground mt-2">Purchase and manage your green hydrogen credits</p>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="bg-card border border-border rounded-lg p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-muted-foreground">Available Credits</p>
+                            <p class="text-2xl font-bold text-foreground">573 GHC</p>
+                        </div>
+                        <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                            <i data-lucide="wallet" class="w-6 h-6 text-primary"></i>
+                        </div>
+                    </div>
+                    <p class="text-xs text-blue-600 mt-2">Ready for use</p>
+                </div>
+
+                <div class="bg-card border border-border rounded-lg p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-muted-foreground">Total Purchased</p>
+                            <p class="text-2xl font-bold text-foreground">2,847 GHC</p>
+                        </div>
+                        <div class="w-12 h-12 bg-green-500/10 rounded-full flex items-center justify-center">
+                            <i data-lucide="shopping-cart" class="w-6 h-6 text-green-500"></i>
+                        </div>
+                    </div>
+                    <p class="text-xs text-green-600 mt-2">All time</p>
+                </div>
+
+                <div class="bg-card border border-border rounded-lg p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-muted-foreground">Retired Credits</p>
+                            <p class="text-2xl font-bold text-foreground">2,274 GHC</p>
+                        </div>
+                        <div class="w-12 h-12 bg-red-500/10 rounded-full flex items-center justify-center">
+                            <i data-lucide="check-circle" class="w-6 h-6 text-red-500"></i>
+                        </div>
+                    </div>
+                    <p class="text-xs text-muted-foreground mt-2">Used for compliance</p>
+                </div>
+
+                <div class="bg-card border border-border rounded-lg p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-muted-foreground">Total Spent</p>
+                            <p class="text-2xl font-bold text-foreground">$89,175</p>
+                        </div>
+                        <div class="w-12 h-12 bg-purple-500/10 rounded-full flex items-center justify-center">
+                            <i data-lucide="credit-card" class="w-6 h-6 text-purple-500"></i>
+                        </div>
+                    </div>
+                    <p class="text-xs text-blue-600 mt-2">Average $31.32/GHC</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Purchase Credits -->
+                <div class="lg:col-span-1">
+                    <div class="bg-card border border-border rounded-lg p-6 mb-6">
+                        <h3 class="text-lg font-semibold text-foreground mb-4">Purchase Credits</h3>
+                        <form class="space-y-4">
+                            <div>
+                                <label class="text-sm font-medium text-foreground">Amount (GHC)</label>
+                                <input type="number" placeholder="0" class="w-full mt-1 px-3 py-2 border border-input rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent" />
+                            </div>
+                            <div>
+                                <label class="text-sm font-medium text-foreground">Producer</label>
+                                <select class="w-full mt-1 px-3 py-2 border border-input rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent">
+                                    <option>GreenEnergy Corp</option>
+                                    <option>Solar Hydrogen Ltd</option>
+                                    <option>WindFuel Industries</option>
+                                </select>
+                            </div>
+                            <div class="bg-muted rounded-md p-3">
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-muted-foreground">Price per GHC:</span>
+                                    <span class="text-foreground font-medium">$32.50</span>
+                                </div>
+                                <div class="flex justify-between text-sm mt-1">
+                                    <span class="text-muted-foreground">Total:</span>
+                                    <span class="text-foreground font-medium">$0.00</span>
+                                </div>
+                            </div>
+                            <button type="button" class="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium py-2.5 px-4 rounded-md transition-colors duration-200">
+                                Purchase Credits
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Compliance Section -->
+                    <div class="bg-card border border-border rounded-lg p-6">
+                        <h3 class="text-lg font-semibold text-foreground mb-4">Compliance Status</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-muted-foreground">2024 Requirement</span>
+                                <span class="text-sm font-medium text-foreground">2,000 GHC</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-muted-foreground">Retired to Date</span>
+                                <span class="text-sm font-medium text-foreground">1,847 GHC</span>
+                            </div>
+                            <div class="w-full bg-muted rounded-full h-2">
+                                <div class="bg-primary h-2 rounded-full" style="width: 92%"></div>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-muted-foreground">Remaining</span>
+                                <span class="text-sm font-medium text-orange-600">153 GHC</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transaction History -->
+                <div class="lg:col-span-2">
+                    <div class="bg-card border border-border rounded-lg p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-foreground">Transaction History</h3>
+                            <div class="flex space-x-2">
+                                <button class="px-3 py-1 text-xs border border-border rounded-md text-muted-foreground hover:text-foreground">All</button>
+                                <button class="px-3 py-1 text-xs border border-border rounded-md text-muted-foreground hover:text-foreground">Purchase</button>
+                                <button class="px-3 py-1 text-xs border border-border rounded-md text-muted-foreground hover:text-foreground">Retire</button>
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead>
+                                    <tr class="border-b border-border">
+                                        <th class="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Date</th>
+                                        <th class="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Type</th>
+                                        <th class="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Producer</th>
+                                        <th class="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Amount</th>
+                                        <th class="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Price</th>
+                                        <th class="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="border-b border-border">
+                                        <td class="py-3 px-4 text-sm text-foreground">Dec 15, 2024</td>
+                                        <td class="py-3 px-4 text-sm text-foreground">Purchase</td>
+                                        <td class="py-3 px-4 text-sm text-foreground">GreenEnergy Corp</td>
+                                        <td class="py-3 px-4 text-sm text-foreground">100 GHC</td>
+                                        <td class="py-3 px-4 text-sm text-foreground">$3,250</td>
+                                        <td class="py-3 px-4"><span class="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">Completed</span></td>
+                                    </tr>
+                                    <tr class="border-b border-border">
+                                        <td class="py-3 px-4 text-sm text-foreground">Dec 14, 2024</td>
+                                        <td class="py-3 px-4 text-sm text-foreground">Retire</td>
+                                        <td class="py-3 px-4 text-sm text-foreground">-</td>
+                                        <td class="py-3 px-4 text-sm text-foreground">75 GHC</td>
+                                        <td class="py-3 px-4 text-sm text-foreground">-</td>
+                                        <td class="py-3 px-4"><span class="px-2 py-1 text-xs bg-red-100 text-red-800 rounded-full">Retired</span></td>
+                                    </tr>
+                                    <tr class="border-b border-border">
+                                        <td class="py-3 px-4 text-sm text-foreground">Dec 13, 2024</td>
+                                        <td class="py-3 px-4 text-sm text-foreground">Purchase</td>
+                                        <td class="py-3 px-4 text-sm text-foreground">Solar Hydrogen Ltd</td>
+                                        <td class="py-3 px-4 text-sm text-foreground">150 GHC</td>
+                                        <td class="py-3 px-4 text-sm text-foreground">$4,875</td>
+                                        <td class="py-3 px-4"><span class="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">Completed</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auditor Dashboard -->
+    <div id="auditor-view" class="view role-auditor">
+        <!-- Navigation -->
+        <nav class="bg-card border-b border-border">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <div class="flex items-center space-x-4">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                                <i data-lucide="leaf" class="w-5 h-5 text-primary-foreground"></i>
+                            </div>
+                            <span class="font-semibold text-foreground">GHC System</span>
+                        </div>
+                        <div class="hidden md:flex space-x-1">
+                            <button class="px-4 py-2 text-sm font-medium text-primary bg-primary/10 rounded-md">Dashboard</button>
+                            <button class="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground rounded-md">Verification</button>
+                            <button class="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground rounded-md">Reports</button>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <span class="text-sm text-muted-foreground">Auditor</span>
+                        <button onclick="showLogin()" class="text-sm text-muted-foreground hover:text-foreground">Sign Out</button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- Header -->
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold text-foreground">Auditor Dashboard</h1>
+                <p class="text-muted-foreground mt-2">Monitor and verify all green hydrogen credit transactions</p>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="bg-card border border-border rounded-lg p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-muted-foreground">Total Credits Issued</p>
+                            <p class="text-2xl font-bold text-foreground">15,847 GHC</p>
+                        </div>
+                        <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                            <i data-lucide="trending-up" class="w-6 h-6 text-primary"></i>
+                        </div>
+                    </div>
+                    <p class="text-xs text-green-600 mt-2">+847 this month</p>
+                </div>
+
+                <div class="bg-card border border-border rounded-lg p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-muted-foreground">Credits Retired</p>
+                            <p class="text-2xl font-bold text-foreground">12,394 GHC</p>
+                        </div>
+                        <div class="w-12 h-12 bg-red-500/10 rounded-full flex items-center justify-center">
+                            <i data-lucide="archive" class="w-6 h-6 text-red-500"></i>
+                        </div>
+                    </div>
+                    <p class="text-xs text-red-600 mt-2">78% retirement rate</p>
+                </div>
+
+                <div class="bg-card border border-border rounded-lg p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-muted-foreground">Active Producers</p>
+                            <p class="text-2xl font-bold text-foreground">47</p>
+                        </div>
+                        <div class="w-12 h-12 bg-blue-500/10 rounded-full flex items-center justify-center">
+                            <i data-lucide="factory" class="w-6 h-6 text-blue-500"></i>
+                        </div>
+                    </div>
+                    <p class="text-xs text-blue-600 mt-2">+3 new this month</p>
+                </div>
+
+                <div class="bg-card border border-border rounded-lg p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-muted-foreground">Pending Verifications</p>
+                            <p class="text-2xl font-bold text-foreground">23</p>
+                        </div>
+                        <div class="w-12 h-12 bg-yellow-500/10 rounded-full flex items-center justify-center">
+                            <i data-lucide="clock" class="w-6 h-6 text-yellow-500"></i>
+                        </div>
+                    </div>
+                    <p class="text-xs text-yellow-600 mt-2">Require attention</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                <!-- Verification Tools -->
+                <div class="lg:col-span-1">
+                    <div class="bg-card border border-border rounded-lg p-6 mb-6">
+                        <h3 class="text-lg font-semibold text-foreground mb-4">Verification Tools</h3>
+                        <div class="space-y-3">
+                            <button class="w-full text-left p-3 border border-border rounded-md hover:bg-accent/50 transition-colors">
+                                <div class="flex items-center space-x-3">
+                                    <i data-lucide="search" class="w-5 h-5 text-primary"></i>
+                                    <span class="text-sm font-medium text-foreground">Search Transactions</span>
+                                </div>
+                            </button>
+                            <button class="w-full text-left p-3 border border-border rounded-md hover:bg-accent/50 transition-colors">
+                                <div class="flex items-center space-x-3">
+                                    <i data-lucide="shield-check" class="w-5 h-5 text-primary"></i>
+                                    <span class="text-sm font-medium text-foreground">Verify Certificate</span>
+                                </div>
+                            </button>
+                            <button class="w-full text-left p-3 border border-border rounded-md hover:bg-accent/50 transition-colors">
+                                <div class="flex items-center space-x-3">
+                                    <i data-lucide="alert-triangle" class="w-5 h-5 text-primary"></i>
+                                    <span class="text-sm font-medium text-foreground">Flag Suspicious</span>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Export Reports -->
+                    <div class="bg-card border border-border rounded-lg p-6">
+                        <h3 class="text-lg font-semibold text-foreground mb-4">Export Reports</h3>
+                        <div class="space-y-3">
+                            <button class="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium py-2 px-4 rounded-md transition-colors">
+                                <i data-lucide="download" class="w-4 h-4 inline mr-2"></i>
+                                Export CSV
+                            </button>
+                            <button class="w-full border border-border hover:bg-accent/50 text-foreground font-medium py-2 px-4 rounded-md transition-colors">
+                                <i data-lucide="file-text" class="w-4 h-4 inline mr-2"></i>
+                                Generate PDF
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- All Transactions -->
+                <div class="lg:col-span-3">
+                    <div class="bg-card border border-border rounded-lg p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-foreground">All System Transactions</h3>
+                            <div class="flex space-x-2">
+                                <input type="text" placeholder="Search..." class="px-3 py-1 text-sm border border-input rounded-md bg-background text-foreground placeholder:text-muted-foreground" />
+                                <select class="px-3 py-1 text-sm border border-input rounded-md bg-background text-foreground">
+                                    <option>All Types</option>
+                                    <option>Issue</option>
+                                    <option>Transfer</option>
+                                    <option>Retire</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead>
+                                    <tr class="border-b border-border">
+                                        <th class="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Tx Hash</th>
+                                        <th class="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Date</th>
+                                        <th class="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Type</th>
+                                        <th class="text-left py-3 px-4 text-sm font-medium text-muted-foreground">From</th>
+                                        <th class="text-left py-3 px-4 text-sm font-medium text-muted-foreground">To</th>
+                                        <th class="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Amount</th>
+                                        <th class="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Status</th>
+                                        <th class="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="border-b border-border">
+                                        <td class="py-3 px-4 text-sm text-foreground font-mono">0x7a3f...9d2e</td>
+                                        <td class="py-3 px-4 text-sm text-foreground">Dec 15, 2024</td>
+                                        <td class="py-3 px-4 text-sm text-foreground">Issue</td>
+                                        <td class="py-3 px-4 text-sm text-foreground">SYSTEM</td>
+                                        <td class="py-3 px-4 text-sm text-foreground">0x8f4a...1b5c</td>
+                                        <td class="py-3 px-4 text-sm text-foreground">150 GHC</td>
+                                        <td class="py-3 px-4"><span class="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">Verified</span></td>
+                                        <td class="py-3 px-4"><button class="text-xs text-primary hover:text-primary/80">View</button></td>
+                                    </tr>
+                                    <tr class="border-b border-border">
+                                        <td class="py-3 px-4 text-sm text-foreground font-mono">0x2b8c...4f7a</td>
+                                        <td class="py-3 px-4 text-sm text-foreground">Dec 15, 2024</td>
+                                        <td class="py-3 px-4 text-sm text-foreground">Transfer</td>
+                                        <td class="py-3 px-4 text-sm text-foreground">0x8f4a...1b5c</td>
+                                        <td class="py-3 px-4 text-sm text-foreground">0x1e9d...6c8f</td>
+                                        <td class="py-3 px-4 text-sm text-foreground">100 GHC</td>
+                                        <td class="py-3 px-4"><span class="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">Verified</span></td>
+                                        <td class="py-3 px-4"><button class="text-xs text-primary hover:text-primary/80">View</button></td>
+                                    </tr>
+                                    <tr class="border-b border-border">
+                                        <td class="py-3 px-4 text-sm text-foreground font-mono">0x9f3e...8a1d</td>
+                                        <td class="py-3 px-4 text-sm text-foreground">Dec 14, 2024</td>
+                                        <td class="py-3 px-4 text-sm text-foreground">Retire</td>
+                                        <td class="py-3 px-4 text-sm text-foreground">0x1e9d...6c8f</td>
+                                        <td class="py-3 px-4 text-sm text-foreground">0x000...dEaD</td>
+                                        <td class="py-3 px-4 text-sm text-foreground">75 GHC</td>
+                                        <td class="py-3 px-4"><span class="px-2 py-1 text-xs bg-red-100 text-red-800 rounded-full">Retired</span></td>
+                                        <td class="py-3 px-4"><button class="text-xs text-primary hover:text-primary/80">View</button></td>
+                                    </tr>
+                                    <tr class="border-b border-border">
+                                        <td class="py-3 px-4 text-sm text-foreground font-mono">0x4d7b...3e9c</td>
+                                        <td class="py-3 px-4 text-sm text-foreground">Dec 14, 2024</td>
+                                        <td class="py-3 px-4 text-sm text-foreground">Issue</td>
+                                        <td class="py-3 px-4 text-sm text-foreground">SYSTEM</td>
+                                        <td class="py-3 px-4 text-sm text-foreground">0x6a2f...9e8b</td>
+                                        <td class="py-3 px-4 text-sm text-foreground">200 GHC</td>
+                                        <td class="py-3 px-4"><span class="px-2 py-1 text-xs bg-yellow-100 text-yellow-800 rounded-full">Pending</span></td>
+                                        <td class="py-3 px-4"><button class="text-xs text-primary hover:text-primary/80">Verify</button></td>
+                                    </tr>
+                                    <tr class="border-b border-border">
+                                        <td class="py-3 px-4 text-sm text-foreground font-mono">0x8e5f...2a7c</td>
+                                        <td class="py-3 px-4 text-sm text-foreground">Dec 13, 2024</td>
+                                        <td class="py-3 px-4 text-sm text-foreground">Transfer</td>
+                                        <td class="py-3 px-4 text-sm text-foreground">0x3c8a...5f2e</td>
+                                        <td class="py-3 px-4 text-sm text-foreground">0x7b9d...4e1a</td>
+                                        <td class="py-3 px-4 text-sm text-foreground">50 GHC</td>
+                                        <td class="py-3 px-4"><span class="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">Verified</span></td>
+                                        <td class="py-3 px-4"><button class="text-xs text-primary hover:text-primary/80">View</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="flex items-center justify-between mt-4">
+                            <p class="text-sm text-muted-foreground">Showing 5 of 1,247 transactions</p>
+                            <div class="flex space-x-2">
+                                <button class="px-3 py-1 text-sm border border-border rounded-md text-muted-foreground hover:text-foreground">Previous</button>
+                                <button class="px-3 py-1 text-sm border border-border rounded-md text-muted-foreground hover:text-foreground">Next</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // View management functions
+        function showLogin() {
+            hideAllViews();
+            document.getElementById('login-view').classList.add('active');
+        }
+
+        function showDashboard(role) {
+            hideAllViews();
+            const viewId = role + '-view';
+            const view = document.getElementById(viewId);
+            if (view) {
+                view.classList.add('active');
+                // Update body class for role-specific styling
+                document.body.className = `bg-background text-foreground role-${role}`;
+            }
+        }
+
+        function hideAllViews() {
+            const views = document.querySelectorAll('.view');
+            views.forEach(view => view.classList.remove('active'));
+        }
+
+        // Add click handlers for role-based dashboard switching
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add event listeners for role buttons in nav or anywhere else
+            const buyerBtn = document.querySelector('[onclick="showDashboard(\'buyer\')"]');
+            const auditorBtn = document.querySelector('[onclick="showDashboard(\'auditor\')"]');
+            
+            // Add click handlers for demonstration
+            document.addEventListener('click', function(e) {
+                if (e.target.textContent === 'Buyer Dashboard') {
+                    showDashboard('buyer');
+                } else if (e.target.textContent === 'Auditor Dashboard') {
+                    showDashboard('auditor');
+                } else if (e.target.textContent === 'Producer Dashboard') {
+                    showDashboard('producer');
+                }
+            });
+        });
+
+        // TODO: Implement business logic, API calls, or state management
+        // - Authentication with backend API
+        // - Real-time data fetching
+        // - Form submissions for transactions
+        // - WebSocket connections for live updates
+        // - Local storage for session management
+        // - Error handling and loading states
+    </script>
+
+    <!-- Demo Navigation (for mockup demonstration) -->
+    <div class="fixed bottom-4 right-4 bg-card border border-border rounded-lg p-4 shadow-lg z-50">
+        <div class="text-xs text-muted-foreground mb-2">Demo Navigation:</div>
+        <div class="space-y-2">
+            <button onclick="showLogin()" class="block w-full text-left px-3 py-1 text-xs bg-secondary hover:bg-secondary/80 rounded">Login</button>
+            <button onclick="showDashboard('producer')" class="block w-full text-left px-3 py-1 text-xs bg-green-100 hover:bg-green-200 text-green-800 rounded">Producer</button>
+            <button onclick="showDashboard('buyer')" class="block w-full text-left px-3 py-1 text-xs bg-blue-100 hover:bg-blue-200 text-blue-800 rounded">Buyer</button>
+            <button onclick="showDashboard('auditor')" class="block w-full text-left px-3 py-1 text-xs bg-purple-100 hover:bg-purple-200 text-purple-800 rounded">Auditor</button>
+        </div>
+    </div>
+</body>
+</html>

@@ -4,6 +4,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Coins, FlaskConical, Award, DollarSign } from "lucide-react";
+import { RoleSwitcher } from "@/components/role-switcher";
 import { Navigation } from "@/components/navigation";
 import { StatsCard } from "@/components/stats-card";
 import { TransactionTable } from "@/components/transaction-table";
@@ -20,19 +21,21 @@ import { issueCreditsSchema, type IssueCreditsData } from "@shared/schema";
 
 export default function ProducerDashboard() {
   const [, setLocation] = useLocation();
-  const { user, wallet, isAuthenticated } = useAuth();
+  const { user, wallet, isAuthenticated, isLoading } = useAuth();
   const { toast } = useToast();
 
   useEffect(() => {
-    if (!isAuthenticated || user?.role !== 'producer') {
+    if (!isLoading && !isAuthenticated) {
+      setLocation('/login');
+    } else if (!isLoading && isAuthenticated && user?.role !== 'producer') {
       setLocation('/login');
     }
-  }, [isAuthenticated, user, setLocation]);
+  }, [isAuthenticated, user, setLocation, isLoading]);
 
   const form = useForm<IssueCreditsData>({
     resolver: zodResolver(issueCreditsSchema),
     defaultValues: {
-      hydrogenKg: 0,
+      hydrogenKg: undefined,
       energySource: "",
       location: ""
     }
@@ -85,12 +88,23 @@ export default function ProducerDashboard() {
     issueCredits.mutate(data);
   };
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+          <p className="mt-4 text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   if (!isAuthenticated || user?.role !== 'producer') {
     return null;
   }
 
-  const totalProduced = certificates.reduce((sum, cert) => sum + cert.hydrogenKg, 0);
-  const revenue = (balance?.balance || 0) * 32.5; // Assuming $32.5 per GHC
+  const totalProduced = certificates.reduce((sum: number, cert: any) => sum + cert.hydrogenKg, 0);
+  const revenue = (balance?.balance || 0) * 415; // ₹415 per GHC
 
   return (
     <div className="min-h-screen bg-background role-producer">
@@ -134,7 +148,7 @@ export default function ProducerDashboard() {
           />
           <StatsCard
             title="Revenue"
-            value={`$${revenue.toLocaleString()}`}
+            value={`₹${revenue.toLocaleString()}`}
             icon={DollarSign}
             iconColor="bg-green-500/10 text-green-500"
             change="+15% from last month"
@@ -163,9 +177,13 @@ export default function ProducerDashboard() {
                           <FormControl>
                             <Input 
                               type="number"
-                              placeholder="0"
+                              placeholder="Enter hydrogen amount"
                               {...field}
-                              onChange={(e) => field.onChange(Number(e.target.value))}
+                              value={field.value || ''}
+                              onChange={(e) => {
+                                const value = e.target.value;
+                                field.onChange(value === '' ? undefined : Number(value));
+                              }}
                               data-testid="input-hydrogen-amount"
                             />
                           </FormControl>
@@ -230,6 +248,21 @@ export default function ProducerDashboard() {
               </CardContent>
             </Card>
           </div>
+
+          {/* Role Switcher */}
+          <Card data-testid="role-switcher">
+            <RoleSwitcher
+              currentRole="producer"
+              walletAddress={wallet!.address}
+              balance={balance?.balance || 0}
+              onRoleSwitch={(newRole) => {
+                queryClient.invalidateQueries();
+                if (newRole === 'buyer') {
+                  setLocation('/buyer/dashboard');
+                }
+              }}
+            />
+          </Card>
 
           {/* Recent Transactions */}
           <div className="lg:col-span-2">

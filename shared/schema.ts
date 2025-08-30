@@ -98,6 +98,15 @@ export const loginSchema = z.object({
   role: z.enum(["producer", "buyer", "auditor"]),
 });
 
+export const registerSchema = z.object({
+  username: z.string().min(3, "Username must be at least 3 characters"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  role: z.enum(["producer", "buyer", "auditor"]),
+  name: z.string().min(1, "Full name is required"),
+  email: z.string().email("Invalid email address").optional(),
+  location: z.string().min(1, "Location is required"),
+});
+
 export const issueCreditsSchema = z.object({
   hydrogenKg: z.number().min(1, "Hydrogen amount must be at least 1 kg"),
   energySource: z.string().min(1, "Energy source is required"),
@@ -114,7 +123,16 @@ export const purchaseCreditsSchema = z.object({
   amount: z.number().min(1, "Amount must be at least 1 GHC"),
 });
 
+// Role switch schema
+export const roleSwitchSchema = z.object({
+  walletAddress: z.string(),
+  newRole: z.enum(['buyer', 'producer'])
+});
+
+// Type exports
+export type RegisterData = z.infer<typeof registerSchema>;
 export type LoginData = z.infer<typeof loginSchema>;
 export type IssueCreditsData = z.infer<typeof issueCreditsSchema>;
-export type TransferCreditsData = z.infer<typeof transferCreditsSchema>;
+export type PurchaseCreditsData = z.infer<typeof purchaseCreditsSchema>;
+export type RoleSwitchData = z.infer<typeof roleSwitchSchema>;
 export type PurchaseCreditsData = z.infer<typeof purchaseCreditsSchema>;

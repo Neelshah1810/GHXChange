@@ -1,10 +1,14 @@
 import { apiRequest } from "./queryClient";
-import { LoginData, IssueCreditsData, TransferCreditsData, PurchaseCreditsData } from "@shared/schema";
+import { LoginData, RegisterData, IssueCreditsData, TransferCreditsData, PurchaseCreditsData } from "@shared/schema";
 
 export const api = {
   auth: {
     login: async (data: LoginData) => {
       const response = await apiRequest("POST", "/api/login", data);
+      return response.json();
+    },
+    register: async (data: RegisterData) => {
+      const response = await apiRequest("POST", "/api/register", data);
       return response.json();
     }
   },
@@ -49,6 +53,14 @@ export const api = {
     },
     getByProducer: async (address: string) => {
       const response = await apiRequest("GET", `/api/certificates/${address}`);
+      return response.json();
+    },
+    verify: async (certificateId: string) => {
+      const response = await apiRequest("POST", `/api/certificates/${certificateId}/verify`);
+      return response.json();
+    },
+    flag: async (certificateId: string, reason?: string) => {
+      const response = await apiRequest("POST", `/api/certificates/${certificateId}/flag`, { reason });
       return response.json();
     }
   },

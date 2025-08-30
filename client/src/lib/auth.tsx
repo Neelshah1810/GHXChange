@@ -42,13 +42,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const login = (user: User, wallet: Wallet) => {
+    // Update state synchronously
     setUser(user);
     setWallet(wallet);
+    
+    // Store in localStorage
     localStorage.setItem('ghc_user', JSON.stringify(user));
     localStorage.setItem('ghc_wallet', JSON.stringify(wallet));
     
     // Set role-based body class
     document.body.className = `bg-background text-foreground role-${user.role}`;
+    
+    console.log('Auth state updated:', { user: user.username, role: user.role, isAuthenticated: true });
   };
 
   const logout = () => {

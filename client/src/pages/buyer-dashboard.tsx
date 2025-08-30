@@ -4,6 +4,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Wallet, ShoppingCart, CheckCircle, CreditCard } from "lucide-react";
+import { RoleSwitcher } from "@/components/role-switcher";
 import { Navigation } from "@/components/navigation";
 import { StatsCard } from "@/components/stats-card";
 import { TransactionTable } from "@/components/transaction-table";
@@ -20,14 +21,16 @@ import { purchaseCreditsSchema, type PurchaseCreditsData } from "@shared/schema"
 
 export default function BuyerDashboard() {
   const [, setLocation] = useLocation();
-  const { user, wallet, isAuthenticated } = useAuth();
+  const { user, wallet, isAuthenticated, isLoading } = useAuth();
   const { toast } = useToast();
 
   useEffect(() => {
-    if (!isAuthenticated || user?.role !== 'buyer') {
+    if (!isLoading && !isAuthenticated) {
+      setLocation('/login');
+    } else if (!isLoading && isAuthenticated && user?.role !== 'buyer') {
       setLocation('/login');
     }
-  }, [isAuthenticated, user, setLocation]);
+  }, [isAuthenticated, user, setLocation, isLoading]);
 
   const form = useForm<PurchaseCreditsData & { amount: number }>({
     resolver: zodResolver(purchaseCreditsSchema.extend({
@@ -35,7 +38,7 @@ export default function BuyerDashboard() {
     })),
     defaultValues: {
       producerAddress: "",
-      amount: 0
+      amount: undefined
     }
   });
 
@@ -112,18 +115,29 @@ export default function BuyerDashboard() {
     });
   };
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+          <p className="mt-4 text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   if (!isAuthenticated || user?.role !== 'buyer') {
     return null;
   }
 
   const currentBalance = balance?.balance || wallet?.balance || 0;
   const totalPurchased = transactions
-    .filter(tx => tx.txType === 'transfer' && tx.toAddress === wallet?.address)
-    .reduce((sum, tx) => sum + tx.amount, 0);
+    .filter((tx: any) => tx.txType === 'transfer' && tx.toAddress === wallet?.address)
+    .reduce((sum: number, tx: any) => sum + tx.amount, 0);
   const totalRetired = transactions
-    .filter(tx => tx.txType === 'retire')
-    .reduce((sum, tx) => sum + tx.amount, 0);
-  const totalSpent = totalPurchased * 32.5; // Assuming $32.5 per GHC
+    .filter((tx: any) => tx.txType === 'retire')
+    .reduce((sum: number, tx: any) => sum + tx.amount, 0);
+  const totalSpent = totalPurchased * 415; // ₹415 per GHC
 
   const complianceProgress = Math.min((totalRetired / 2000) * 100, 100); // 2000 GHC annual requirement
 
@@ -167,10 +181,10 @@ export default function BuyerDashboard() {
           />
           <StatsCard
             title="Total Spent"
-            value={`$${totalSpent.toLocaleString()}`}
+            value={`₹${totalSpent.toLocaleString()}`}
             icon={CreditCard}
             iconColor="bg-purple-500/10 text-purple-500"
-            subtitle={`Average $${totalPurchased > 0 ? (totalSpent / totalPurchased).toFixed(2) : '0'}/GHC`}
+            subtitle={`Average ₹${totalPurchased > 0 ? (totalSpent / totalPurchased).toLocaleString() : '0'}/GHC`}
           />
         </div>
 
@@ -196,9 +210,13 @@ export default function BuyerDashboard() {
                           <FormControl>
                             <Input 
                               type="number"
-                              placeholder="0"
+                              placeholder="Enter amount to purchase"
                               {...field}
-                              onChange={(e) => field.onChange(Number(e.target.value))}
+                              value={field.value || ''}
+                              onChange={(e) => {
+                                const value = e.target.value;
+                                field.onChange(value === '' ? undefined : Number(value));
+                              }}
                               data-testid="input-purchase-amount"
                             />
                           </FormControl>
@@ -220,7 +238,7 @@ export default function BuyerDashboard() {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              {producers.map((producer) => (
+                              {producers.map((producer: any) => (
                                 <SelectItem key={producer.address} value={producer.address}>
                                   {producer.name} ({producer.balance} GHC available)
                                 </SelectItem>
@@ -235,12 +253,12 @@ export default function BuyerDashboard() {
                     <div className="bg-muted rounded-md p-3" data-testid="purchase-summary">
                       <div className="flex justify-between text-sm">
                         <span className="text-muted-foreground">Price per GHC:</span>
-                        <span className="text-foreground font-medium">$32.50</span>
+                        <span className="text-foreground font-medium">₹415</span>
                       </div>
                       <div className="flex justify-between text-sm mt-1">
                         <span className="text-muted-foreground">Total:</span>
                         <span className="text-foreground font-medium">
-                          ${((form.watch('amount') || 0) * 32.5).toFixed(2)}
+                          ₹{((form.watch('amount') || 0) * 415).toLocaleString()}
                         </span>
                       </div>
                     </div>
@@ -301,6 +319,21 @@ export default function BuyerDashboard() {
               </CardContent>
             </Card>
           </div>
+
+          {/* Role Switcher */}
+          <Card data-testid="role-switcher">
+            <RoleSwitcher
+              currentRole="buyer"
+              walletAddress={wallet!.address}
+              balance={currentBalance}
+              onRoleSwitch={(newRole) => {
+                queryClient.invalidateQueries();
+                if (newRole === 'producer') {
+                  setLocation('/producer/dashboard');
+                }
+              }}
+            />
+          </Card>
 
           {/* Transaction History */}
           <div className="lg:col-span-2">
