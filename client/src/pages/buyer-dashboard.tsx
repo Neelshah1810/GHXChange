@@ -4,7 +4,6 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Wallet, ShoppingCart, CheckCircle, CreditCard } from "lucide-react";
-import { RoleSwitcher } from "@/components/role-switcher";
 import { Navigation } from "@/components/navigation";
 import { StatsCard } from "@/components/stats-card";
 import { TransactionTable } from "@/components/transaction-table";
@@ -83,37 +82,11 @@ export default function BuyerDashboard() {
     }
   });
 
-  const retireCredits = useMutation({
-    mutationFn: (data: { amount: number; purpose?: string }) => 
-      api.credits.retire({ address: wallet!.address, ...data }),
-    onSuccess: (response) => {
-      toast({
-        title: "Credits Retired Successfully",
-        description: response.message
-      });
-      queryClient.invalidateQueries({ queryKey: ['/api/transactions'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/balance'] });
-    },
-    onError: () => {
-      toast({
-        variant: "destructive",
-        title: "Failed to Retire Credits",
-        description: "Please try again later."
-      });
-    }
-  });
 
   const onSubmit = (data: PurchaseCreditsData & { amount: number }) => {
     purchaseCredits.mutate(data);
   };
 
-  const handleRetire = () => {
-    const amount = 50; // Default retirement amount
-    retireCredits.mutate({ 
-      amount, 
-      purpose: "Steel production compliance" 
-    });
-  };
 
   if (isLoading) {
     return (
@@ -134,12 +107,7 @@ export default function BuyerDashboard() {
   const totalPurchased = transactions
     .filter((tx: any) => tx.txType === 'transfer' && tx.toAddress === wallet?.address)
     .reduce((sum: number, tx: any) => sum + tx.amount, 0);
-  const totalRetired = transactions
-    .filter((tx: any) => tx.txType === 'retire')
-    .reduce((sum: number, tx: any) => sum + tx.amount, 0);
   const totalSpent = totalPurchased * 415; // ₹415 per GHC
-
-  const complianceProgress = Math.min((totalRetired / 2000) * 100, 100); // 2000 GHC annual requirement
 
   return (
     <div className="min-h-screen bg-background role-buyer">
@@ -157,7 +125,7 @@ export default function BuyerDashboard() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <StatsCard
             title="Available Credits"
             value={`${currentBalance} GHC`}
@@ -173,13 +141,6 @@ export default function BuyerDashboard() {
             subtitle="All time"
           />
           <StatsCard
-            title="Retired Credits"
-            value={`${totalRetired} GHC`}
-            icon={CheckCircle}
-            iconColor="bg-red-500/10 text-red-500"
-            subtitle="Used for compliance"
-          />
-          <StatsCard
             title="Total Spent"
             value={`₹${totalSpent.toLocaleString()}`}
             icon={CreditCard}
@@ -188,10 +149,9 @@ export default function BuyerDashboard() {
           />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Purchase Credits & Compliance */}
-          <div className="lg:col-span-1 space-y-6">
-            {/* Purchase Credits Form */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Purchase Credits */}
+          <div>
             <Card data-testid="purchase-credits-form">
               <CardHeader>
                 <CardTitle className="text-lg font-semibold text-foreground">
@@ -275,68 +235,10 @@ export default function BuyerDashboard() {
                 </Form>
               </CardContent>
             </Card>
-
-            {/* Compliance Section */}
-            <Card data-testid="compliance-status">
-              <CardHeader>
-                <CardTitle className="text-lg font-semibold text-foreground">
-                  Compliance Status
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">2024 Requirement</span>
-                    <span className="text-sm font-medium text-foreground">2,000 GHC</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Retired to Date</span>
-                    <span className="text-sm font-medium text-foreground">{totalRetired} GHC</span>
-                  </div>
-                  <div className="w-full bg-muted rounded-full h-2">
-                    <div 
-                      className="bg-primary h-2 rounded-full transition-all duration-300" 
-                      style={{ width: `${complianceProgress}%` }}
-                      data-testid="compliance-progress-bar"
-                    />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Remaining</span>
-                    <span className="text-sm font-medium text-orange-600">
-                      {Math.max(0, 2000 - totalRetired)} GHC
-                    </span>
-                  </div>
-                  <Button 
-                    onClick={handleRetire}
-                    variant="outline"
-                    className="w-full mt-4"
-                    disabled={currentBalance < 50 || retireCredits.isPending}
-                    data-testid="button-retire-credits"
-                  >
-                    {retireCredits.isPending ? "Retiring..." : "Retire 50 GHC"}
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
           </div>
 
-          {/* Role Switcher */}
-          <Card data-testid="role-switcher">
-            <RoleSwitcher
-              currentRole="buyer"
-              walletAddress={wallet!.address}
-              balance={currentBalance}
-              onRoleSwitch={(newRole) => {
-                queryClient.invalidateQueries();
-                if (newRole === 'producer') {
-                  setLocation('/producer/dashboard');
-                }
-              }}
-            />
-          </Card>
-
           {/* Transaction History */}
-          <div className="lg:col-span-2">
+          <div>
             <TransactionTable
               title="Transaction History"
               transactions={transactions.slice(0, 10)}

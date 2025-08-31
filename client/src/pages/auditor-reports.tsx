@@ -101,8 +101,6 @@ export default function AuditorReports() {
       totalTransactions: transactions.length,
       totalCertificates: certificates.length,
       totalProducers: producers.length,
-      monthlyIssued,
-      monthlyRetired,
       complianceRate: complianceRate.toFixed(1),
       stats: stats || {},
       energySourceBreakdown,
@@ -164,23 +162,23 @@ export default function AuditorReports() {
           }))
         };
         
-      case "System Analytics":
-        return {
-          ...baseData,
-          reportName: "System Analytics Report",
-          monthlyMetrics: {
-            issued: monthlyIssued,
-            retired: monthlyRetired,
-            certificates: certificates.length,
-            co2Avoided: (certificates.reduce((sum: number, cert: any) => sum + cert.hydrogenKg, 0) * 10.4).toFixed(0)
-          },
-          trends: [
-            { metric: "Transactions", current: monthlyTransactions.length, growth: "+12%" },
-            { metric: "New Producers", current: 3, growth: "+50%" },
-            { metric: "Credits Issued", current: `${monthlyIssued} GHC`, growth: "+8%" },
-            { metric: "Credits Retired", current: `${monthlyRetired} GHC`, growth: "+15%" }
-          ]
-        };
+        case "System Analytics":
+          return {
+            ...baseData,
+            reportName: "System Analytics Report",
+            systemMetrics: {
+              totalIssued: stats?.totalIssued || 0,
+              totalRetired: stats?.totalRetired || 0,
+              certificates: certificates.length,
+              co2Avoided: (certificates.reduce((sum: number, cert: any) => sum + cert.hydrogenKg, 0) * 10.4).toFixed(0)
+            },
+            analytics: [
+              { metric: "Total Transactions", current: transactions.length },
+              { metric: "Active Producers", current: producers.length },
+              { metric: "Credits Issued", current: `${stats?.totalIssued || 0} GHC` },
+              { metric: "Credits Retired", current: `${stats?.totalRetired || 0} GHC` }
+            ]
+          };
         
       default:
         return baseData;
@@ -234,17 +232,17 @@ export default function AuditorReports() {
         break;
         
       case "System Analytics":
-        csvContent += `Monthly Metrics\n`;
+        csvContent += `System Metrics\n`;
         csvContent += `Metric,Value\n`;
-        csvContent += `Issued,${data.monthlyMetrics.issued}\n`;
-        csvContent += `Retired,${data.monthlyMetrics.retired}\n`;
-        csvContent += `Certificates,${data.monthlyMetrics.certificates}\n`;
-        csvContent += `CO2 Avoided,${data.monthlyMetrics.co2Avoided} kg\n`;
+        csvContent += `Total Issued,${data.systemMetrics.totalIssued}\n`;
+        csvContent += `Total Retired,${data.systemMetrics.totalRetired}\n`;
+        csvContent += `Certificates,${data.systemMetrics.certificates}\n`;
+        csvContent += `CO2 Avoided,${data.systemMetrics.co2Avoided} kg\n`;
         csvContent += `\n`;
-        csvContent += `Trends\n`;
-        csvContent += `Metric,Current,Growth\n`;
-        data.trends.forEach((trend: any) => {
-          csvContent += `${trend.metric},${trend.current},${trend.growth}\n`;
+        csvContent += `Analytics\n`;
+        csvContent += `Metric,Current\n`;
+        data.analytics.forEach((item: any) => {
+          csvContent += `${item.metric},${item.current}\n`;
         });
         break;
     }
@@ -396,12 +394,12 @@ export default function AuditorReports() {
               <h2>System Analytics</h2>
               <div class="stats-grid">
                 <div class="stat-card">
-                  <div class="stat-value">${monthlyIssued}</div>
-                  <div class="stat-label">This Month Issued</div>
+                  <div class="stat-value">${stats?.totalIssued || 0}</div>
+                  <div class="stat-label">Total Credits Issued</div>
                 </div>
                 <div class="stat-card">
-                  <div class="stat-value">${monthlyRetired}</div>
-                  <div class="stat-label">This Month Retired</div>
+                  <div class="stat-value">${stats?.totalRetired || 0}</div>
+                  <div class="stat-label">Total Credits Retired</div>
                 </div>
                 <div class="stat-card">
                   <div class="stat-value">${certificates.length}</div>
@@ -414,35 +412,30 @@ export default function AuditorReports() {
               </div>
             </div>
             <div class="section">
-              <h2>Monthly Activity Trends</h2>
+              <h2>System Analytics Summary</h2>
               <table class="table">
                 <thead>
                   <tr>
                     <th>Metric</th>
-                    <th>Current Month</th>
-                    <th>Growth</th>
+                    <th>Current Value</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
-                    <td>Transactions</td>
-                    <td>${monthlyTransactions.length}</td>
-                    <td>+12%</td>
+                    <td>Total Transactions</td>
+                    <td>${transactions.length}</td>
                   </tr>
                   <tr>
-                    <td>New Producers</td>
-                    <td>3</td>
-                    <td>+50%</td>
+                    <td>Active Producers</td>
+                    <td>${producers.length}</td>
                   </tr>
                   <tr>
                     <td>Credits Issued</td>
-                    <td>${monthlyIssued} GHC</td>
-                    <td>+8%</td>
+                    <td>${stats?.totalIssued || 0} GHC</td>
                   </tr>
                   <tr>
                     <td>Credits Retired</td>
-                    <td>${monthlyRetired} GHC</td>
-                    <td>+15%</td>
+                    <td>${stats?.totalRetired || 0} GHC</td>
                   </tr>
                 </tbody>
               </table>
@@ -511,21 +504,6 @@ export default function AuditorReports() {
   }
 
   // Calculate report metrics
-  const currentMonth = new Date().getMonth();
-  const currentYear = new Date().getFullYear();
-  
-  const monthlyTransactions = transactions.filter((tx: any) => {
-    const txDate = new Date(tx.timestamp);
-    return txDate.getMonth() === currentMonth && txDate.getFullYear() === currentYear;
-  });
-
-  const monthlyIssued = monthlyTransactions
-    .filter((tx: any) => tx.txType === 'issue')
-    .reduce((sum: number, tx: any) => sum + tx.amount, 0);
-
-  const monthlyRetired = monthlyTransactions
-    .filter((tx: any) => tx.txType === 'retire')
-    .reduce((sum: number, tx: any) => sum + tx.amount, 0);
 
   const energySourceBreakdown = certificates.reduce((acc: any, cert: any) => {
     acc[cert.energySource] = (acc[cert.energySource] || 0) + cert.hydrogenKg;
@@ -554,13 +532,13 @@ export default function AuditorReports() {
         </div>
 
         {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card data-testid="monthly-issued">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <Card data-testid="total-issued">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">This Month Issued</p>
-                  <p className="text-2xl font-bold text-foreground">{monthlyIssued} GHC</p>
+                  <p className="text-sm text-muted-foreground">Total Issued</p>
+                  <p className="text-2xl font-bold text-foreground">{stats?.totalIssued || 0} GHC</p>
                 </div>
                 <div className="w-12 h-12 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center">
                   <TrendingUp className="w-6 h-6" />
@@ -569,29 +547,15 @@ export default function AuditorReports() {
             </CardContent>
           </Card>
 
-          <Card data-testid="monthly-retired">
+          <Card data-testid="total-retired">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">This Month Retired</p>
-                  <p className="text-2xl font-bold text-foreground">{monthlyRetired} GHC</p>
+                  <p className="text-sm text-muted-foreground">Total Retired</p>
+                  <p className="text-2xl font-bold text-foreground">{stats?.totalRetired || 0} GHC</p>
                 </div>
                 <div className="w-12 h-12 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center">
                   <BarChart3 className="w-6 h-6" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card data-testid="compliance-rate">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Compliance Rate</p>
-                  <p className="text-2xl font-bold text-foreground">{complianceRate.toFixed(1)}%</p>
-                </div>
-                <div className="w-12 h-12 bg-blue-500/10 text-blue-500 rounded-full flex items-center justify-center">
-                  <PieChart className="w-6 h-6" />
                 </div>
               </div>
             </CardContent>
@@ -754,8 +718,8 @@ export default function AuditorReports() {
               <CardContent>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="bg-muted rounded-lg p-4">
-                    <h4 className="font-medium text-foreground">Transactions This Month</h4>
-                    <p className="text-2xl font-bold text-primary">{monthlyTransactions.length}</p>
+                    <h4 className="font-medium text-foreground">Total Transactions</h4>
+                    <p className="text-2xl font-bold text-primary">{transactions.length}</p>
                   </div>
                   <div className="bg-muted rounded-lg p-4">
                     <h4 className="font-medium text-foreground">Certificates Issued</h4>

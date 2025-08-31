@@ -35,13 +35,16 @@ export class DatabaseStorage implements IStorage {
         username: userData.username,
         password: hashedPassword,
         role: userData.role,
-        name: userData.name,
-        walletAddress
+        name: userData.name
       };
       console.log('🔄 Inserting user into database...');
       
       const [user] = await db.insert(users).values(newUser).returning();
       console.log('✅ User created:', user.id);
+      
+      // Update user with wallet address
+      await db.update(users).set({ walletAddress }).where(eq(users.id, user.id));
+      console.log('✅ User updated with wallet address');
       
       // Create wallet
       const newWallet: InsertWallet = {
@@ -54,6 +57,9 @@ export class DatabaseStorage implements IStorage {
       
       const [wallet] = await db.insert(wallets).values(newWallet).returning();
       console.log('✅ Wallet created:', wallet.id);
+      
+      // Update user object with wallet address for return
+      user.walletAddress = walletAddress;
       
       return { user, wallet };
     } catch (error) {
@@ -84,6 +90,25 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
+  async getUserByWalletAddress(address: string): Promise<User | undefined> {
+    try {
+      const result = await db.select().from(users).where(eq(users.walletAddress, address));
+      return result[0];
+    } catch (error) {
+      console.error('Get user by wallet address error:', error);
+      return undefined;
+    }
+  }
+
+  async updateUserRole(userId: string, role: string): Promise<void> {
+    try {
+      await db.update(users).set({ role }).where(eq(users.id, userId));
+    } catch (error) {
+      console.error('Update user role error:', error);
+      throw new Error('Failed to update user role');
+    }
+  }
+
   async createUser(user: InsertUser): Promise<User> {
     try {
       const [newUser] = await db.insert(users).values(user).returning();
@@ -96,16 +121,19 @@ export class DatabaseStorage implements IStorage {
 
   async authenticateUser(username: string, password: string, role: string): Promise<User | null> {
     try {
+      // Get user by username
       const user = await this.getUserByUsername(username);
-      if (!user || user.role !== role) {
+      if (!user) {
         return null;
       }
 
+      // Verify password
       const isValid = await bcrypt.compare(password, user.password);
       if (!isValid) {
         return null;
       }
 
+      // User is authenticated at this point, role checking is done at a higher level
       return user;
     } catch (error) {
       console.error('Authentication error:', error);
@@ -149,6 +177,15 @@ export class DatabaseStorage implements IStorage {
     } catch (error) {
       console.error('Update wallet balance error:', error);
       throw new Error('Failed to update wallet balance');
+    }
+  }
+
+  async updateWalletType(address: string, type: string): Promise<void> {
+    try {
+      await db.update(wallets).set({ type }).where(eq(wallets.address, address));
+    } catch (error) {
+      console.error('Update wallet type error:', error);
+      throw new Error('Failed to update wallet type');
     }
   }
 

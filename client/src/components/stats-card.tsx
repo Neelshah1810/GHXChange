@@ -7,8 +7,6 @@ interface StatsCardProps {
   icon: LucideIcon;
   iconColor: string;
   subtitle?: string;
-  change?: string;
-  changeType?: 'positive' | 'negative' | 'neutral';
 }
 
 export function StatsCard({ 
@@ -16,20 +14,8 @@ export function StatsCard({
   value, 
   icon: Icon, 
   iconColor, 
-  subtitle, 
-  change, 
-  changeType = 'neutral' 
+  subtitle
 }: StatsCardProps) {
-  const getChangeColor = () => {
-    switch (changeType) {
-      case 'positive':
-        return 'text-green-600';
-      case 'negative':
-        return 'text-red-600';
-      default:
-        return 'text-muted-foreground';
-    }
-  };
 
   return (
     <Card data-testid={`stats-card-${title.toLowerCase().replace(/\s+/g, '-')}`}>
@@ -47,18 +33,11 @@ export function StatsCard({
             <Icon className="w-6 h-6" />
           </div>
         </div>
-        {(subtitle || change) && (
+        {subtitle && (
           <div className="mt-2">
-            {change && (
-              <p className={`text-xs ${getChangeColor()}`} data-testid={`stats-change-${title.toLowerCase().replace(/\s+/g, '-')}`}>
-                {change}
-              </p>
-            )}
-            {subtitle && (
-              <p className="text-xs text-muted-foreground" data-testid={`stats-subtitle-${title.toLowerCase().replace(/\s+/g, '-')}`}>
-                {subtitle}
-              </p>
-            )}
+            <p className="text-xs text-muted-foreground" data-testid={`stats-subtitle-${title.toLowerCase().replace(/\s+/g, '-')}`}>
+              {subtitle}
+            </p>
           </div>
         )}
       </CardContent>

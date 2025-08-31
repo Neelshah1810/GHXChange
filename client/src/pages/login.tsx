@@ -61,7 +61,12 @@ export default function Login() {
         
         // Use setTimeout to ensure state is updated before redirect
         setTimeout(() => {
-          setLocation(`/${data.role}`);
+          const path = data.role === 'producer'
+            ? '/producer/dashboard'
+            : data.role === 'buyer'
+              ? '/buyer/dashboard'
+              : '/auditor';
+          setLocation(path);
         }, 100);
       }
     } catch (error) {
@@ -86,13 +91,20 @@ export default function Login() {
         // Update body class for role-specific styling
         document.body.className = `bg-background text-foreground role-${data.role}`;
         
-        // Redirect to appropriate dashboard
-        setLocation(`/${data.role}`);
-        
         toast({
           title: "Registration Successful",
           description: `Welcome to GreenHydrogenChain, ${response.user.name}!`
         });
+        
+        // Delay navigation to ensure state is updated
+        setTimeout(() => {
+          const path = data.role === 'producer'
+            ? '/producer/dashboard'
+            : data.role === 'buyer'
+              ? '/buyer/dashboard'
+              : '/auditor';
+          setLocation(path);
+        }, 1000);
       }
     } catch (error: any) {
       toast({

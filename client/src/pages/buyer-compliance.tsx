@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { CheckCircle, FileText, Calendar, TrendingUp, AlertTriangle, Download, Eye } from "lucide-react";
+import { CheckCircle, FileText, Calendar, TrendingUp, AlertTriangle, Download, Eye, Factory } from "lucide-react";
 import { Navigation } from "@/components/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/lib/auth";
@@ -15,11 +16,28 @@ import { api } from "@/lib/api";
 import { queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
+// Industry requirements mapping
+const INDUSTRY_REQUIREMENTS = {
+  "steel": { requirement: 2000, name: "Steel Production" },
+  "cement": { requirement: 1500, name: "Cement Manufacturing" },
+  "chemicals": { requirement: 2500, name: "Chemical Industry" },
+  "refining": { requirement: 3000, name: "Oil Refining" },
+  "aluminum": { requirement: 1800, name: "Aluminum Production" },
+  "fertilizer": { requirement: 2200, name: "Fertilizer Manufacturing" },
+  "glass": { requirement: 1200, name: "Glass Manufacturing" },
+  "power": { requirement: 4000, name: "Power Generation" },
+  "shipping": { requirement: 1600, name: "Maritime Shipping" },
+  "aviation": { requirement: 3500, name: "Aviation Fuel" },
+  "other": { requirement: 2000, name: "Other Industry" }
+};
+
 export default function BuyerCompliance() {
   const [, setLocation] = useLocation();
   const { user, wallet, isAuthenticated, isLoading } = useAuth();
   const { toast } = useToast();
   const [retireAmount, setRetireAmount] = useState<number | undefined>(undefined);
+  const [selectedIndustry, setSelectedIndustry] = useState<string>("steel");
+  const [retireForIndustry, setRetireForIndustry] = useState<string>("steel");
 
   useEffect(() => {
     if (!isLoading && (!isAuthenticated || user?.role !== 'buyer')) {
@@ -270,11 +288,21 @@ export default function BuyerCompliance() {
     .filter((tx: any) => tx.txType === 'retire')
     .reduce((sum: number, tx: any) => sum + tx.amount, 0);
 
-  // Compliance calculations
-  const annualRequirement = 2000; // 2000 GHC annual requirement
+  // Compliance calculations based on selected industry
+  const currentIndustry = INDUSTRY_REQUIREMENTS[selectedIndustry as keyof typeof INDUSTRY_REQUIREMENTS];
+  const annualRequirement = currentIndustry.requirement;
   const complianceProgress = Math.min((totalRetired / annualRequirement) * 100, 100);
   const remaining = Math.max(0, annualRequirement - totalRetired);
   const isCompliant = totalRetired >= annualRequirement;
+
+  const handleIndustryChange = (industry: string) => {
+    setSelectedIndustry(industry);
+    const newIndustry = INDUSTRY_REQUIREMENTS[industry as keyof typeof INDUSTRY_REQUIREMENTS];
+    toast({
+      title: "Industry Changed",
+      description: `Annual requirement updated to ${newIndustry.requirement} GHC for ${newIndustry.name}`
+    });
+  };
 
   const retiredTransactions = transactions.filter((tx: any) => tx.txType === 'retire');
 
@@ -292,6 +320,44 @@ export default function BuyerCompliance() {
             Track your regulatory compliance and retire credits for reporting
           </p>
         </div>
+
+        {/* Industry Selection */}
+        <Card className="mb-8" data-testid="industry-selection">
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold text-foreground flex items-center">
+              <Factory className="w-5 h-5 mr-2" />
+              Industry Classification
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="text-sm font-medium text-foreground mb-2 block">
+                  Select Your Industry
+                </label>
+                <Select value={selectedIndustry} onValueChange={handleIndustryChange}>
+                  <SelectTrigger className="w-full" data-testid="select-industry">
+                    <SelectValue placeholder="Select industry" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.entries(INDUSTRY_REQUIREMENTS).map(([key, { name }]) => (
+                      <SelectItem key={key} value={key}>
+                        {name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="bg-muted rounded-lg p-4">
+                <h4 className="font-medium text-foreground mb-2">Industry Requirement</h4>
+                <p className="text-2xl font-bold text-primary">{annualRequirement} GHC</p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Annual compliance requirement for {currentIndustry.name}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Compliance Overview */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -344,7 +410,7 @@ export default function BuyerCompliance() {
                 </div>
               </div>
               <p className="text-xs text-muted-foreground mt-2">
-                Steel industry standard
+                {currentIndustry.name} standard
               </p>
             </CardContent>
           </Card>
@@ -381,36 +447,35 @@ export default function BuyerCompliance() {
                     />
                   </div>
 
-                  <div className="space-y-2">
-                    <Button
-                      onClick={() => handleRetire("Steel production compliance")}
-                      disabled={!retireAmount || retireAmount <= 0 || retireAmount > currentBalance || retireCredits.isPending}
-                      className="w-full"
-                      data-testid="button-retire-steel"
-                    >
-                      {retireCredits.isPending ? "Processing..." : "Retire for Steel Production"}
-                    </Button>
-                    
-                    <Button
-                      variant="outline"
-                      onClick={() => handleRetire("General industrial compliance")}
-                      disabled={!retireAmount || retireAmount <= 0 || retireAmount > currentBalance || retireCredits.isPending}
-                      className="w-full"
-                      data-testid="button-retire-general"
-                    >
-                      Retire for General Industry
-                    </Button>
-                    
-                    <Button
-                      variant="outline"
-                      onClick={() => handleRetire("Voluntary carbon reduction")}
-                      disabled={!retireAmount || retireAmount <= 0 || retireAmount > currentBalance || retireCredits.isPending}
-                      className="w-full"
-                      data-testid="button-retire-voluntary"
-                    >
-                      Retire for Carbon Reduction
-                    </Button>
+                  <div>
+                    <label className="text-sm font-medium text-foreground mb-2 block">
+                      Retire for Industry
+                    </label>
+                    <Select value={retireForIndustry} onValueChange={setRetireForIndustry}>
+                      <SelectTrigger className="w-full" data-testid="select-retire-industry">
+                        <SelectValue placeholder="Select industry to retire for" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Object.entries(INDUSTRY_REQUIREMENTS).map(([key, { name }]) => (
+                          <SelectItem key={key} value={key}>
+                            {name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
+
+                  <Button
+                    onClick={() => {
+                      const selectedRetireIndustry = INDUSTRY_REQUIREMENTS[retireForIndustry as keyof typeof INDUSTRY_REQUIREMENTS];
+                      handleRetire(`${selectedRetireIndustry.name} compliance`);
+                    }}
+                    disabled={!retireAmount || retireAmount <= 0 || retireAmount > currentBalance || retireCredits.isPending}
+                    className="w-full"
+                    data-testid="button-retire-credits"
+                  >
+                    {retireCredits.isPending ? "Processing..." : `Retire for ${INDUSTRY_REQUIREMENTS[retireForIndustry as keyof typeof INDUSTRY_REQUIREMENTS].name}`}
+                  </Button>
 
                   <div className="border-t border-border pt-4 space-y-2">
                     <Dialog>

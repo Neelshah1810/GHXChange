@@ -56,14 +56,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/login", async (req, res) => {
     try {
+      // First validate the request schema
       const { username, password, role } = loginSchema.parse(req.body);
-      const user = await storageInstance.authenticateUser(username, password, role);
       
-      if (!user) {
-        return res.status(401).json({ message: "Invalid credentials" });
+      // Check if user exists
+      const existingUser = await storageInstance.getUserByUsername(username);
+      if (!existingUser) {
+        return res.status(401).json({ message: "Invalid username or password" });
       }
 
+      // Check role before attempting password verification
+      if (existingUser.role !== role) {
+        return res.status(401).json({ 
+          message: `You are registered as a ${existingUser.role}, not as a ${role}` 
+        });
+      }
+
+      // Attempt authentication with password
+      const user = await storageInstance.authenticateUser(username, password, role);
+      if (!user) {
+        return res.status(401).json({ message: "Invalid username or password" });
+      }
+
+      // Get associated wallet
       const wallet = await storageInstance.getWallet(user.walletAddress!);
+      if (!wallet) {
+        return res.status(500).json({ message: "User wallet not found" });
+      }
+      
+      // Return successful login response
       res.json({ 
         user: {
           id: user.id,
@@ -72,15 +93,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
           name: user.name,
           walletAddress: user.walletAddress
         },
-        wallet: wallet ? {
+        wallet: {
           address: wallet.address,
           balance: wallet.balance,
           type: wallet.type,
           name: wallet.name
-        } : null
+        }
       });
     } catch (error) {
-      res.status(400).json({ message: "Invalid request data" });
+      if (error?.name === 'ZodError') {
+        return res.status(400).json({ message: "Invalid request data", errors: error.errors });
+      }
+      console.error('Login error:', error);
+      res.status(500).json({ message: "Login failed. Please try again." });
     }
   });
 
@@ -294,22 +319,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Wallet not found" });
       }
 
-      const user = await storageInstance.getUserById(wallet.userId);
+      const user = await storageInstance.getUserByWalletAddress(walletAddress);
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
 
-      // Check if user meets criteria for role switch
+      // Check criteria: require 1000 GHC to become a producer
       if (newRole === 'producer') {
-        if (wallet.balance < user.minBalanceForProducer) {
+        if ((wallet.balance || 0) < 1000) {
           return res.status(400).json({ 
-            message: `Insufficient balance. Need at least ${user.minBalanceForProducer} GHC to become a producer.`
+            message: 'Insufficient balance. Need at least 1000 GHC to become a producer.'
           });
         }
 
-        // Add producer role
-        await storageInstance.addUserRole(user.id, 'producer');
-        await storageInstance.updateWalletType(wallet.id, 'producer');
+        // Update user role and wallet type
+        await storageInstance.updateUserRole(user.id, 'producer');
+        await storageInstance.updateWalletType(wallet.address, 'producer');
 
         res.json({ 
           message: "Successfully switched to producer role",
@@ -320,9 +345,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }
         });
       } else if (newRole === 'buyer') {
-        // Add buyer role
-        await storageInstance.addUserRole(user.id, 'buyer');
-        await storageInstance.updateWalletType(wallet.id, 'buyer');
+        // Update user role and wallet type
+        await storageInstance.updateUserRole(user.id, 'buyer');
+        await storageInstance.updateWalletType(wallet.address, 'buyer');
 
         res.json({ 
           message: "Successfully switched to buyer role",
@@ -339,11 +364,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get user roles
-  app.get("/api/users/:userId/roles", async (req, res) => {
+  app.get("/api/users/:walletAddress/roles", async (req, res) => {
     try {
-      const { userId } = req.params;
-      const roles = await storageInstance.getUserRoles(userId);
-      res.json(roles);
+      const { walletAddress } = req.params;
+      const wallet = await storageInstance.getWallet(walletAddress);
+      if (!wallet) {
+        return res.status(404).json({ message: "Wallet not found" });
+      }
+      // For now, return the primary role from the user record
+      const user = await storageInstance.getUserByWalletAddress(walletAddress);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      res.json([
+        { id: 'primary', role: user.role, isActive: true }
+      ]);
     } catch (error) {
       res.status(500).json({ message: "Server error" });
     }

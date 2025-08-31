@@ -5,6 +5,8 @@ export interface IStorage {
   // User operations
   getUser(id: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
+  getUserByWalletAddress(address: string): Promise<User | undefined>;
+  updateUserRole(userId: string, role: string): Promise<void>;
   createUser(user: InsertUser): Promise<User>;
   authenticateUser(username: string, password: string, role: string): Promise<User | null>;
   registerUser?(userData: RegisterData): Promise<{ user: User; wallet: Wallet }>;
@@ -14,6 +16,7 @@ export interface IStorage {
   getWalletsByType(type: string): Promise<Wallet[]>;
   createWallet(wallet: InsertWallet): Promise<Wallet>;
   updateWalletBalance(address: string, balance: number): Promise<void>;
+  updateWalletType(address: string, type: string): Promise<void>;
   getAllWallets(): Promise<Wallet[]>;
 
   // Transaction operations
@@ -147,6 +150,17 @@ export class MemStorage implements IStorage {
     return Array.from(this.users.values()).find(user => user.username === username);
   }
 
+  async getUserByWalletAddress(address: string): Promise<User | undefined> {
+    return Array.from(this.users.values()).find(user => user.walletAddress === address);
+  }
+
+  async updateUserRole(userId: string, role: string): Promise<void> {
+    const user = this.users.get(userId);
+    if (user) {
+      user.role = role as any;
+    }
+  }
+
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = randomUUID();
     const user: User = { 
@@ -221,6 +235,13 @@ export class MemStorage implements IStorage {
     const wallet = this.wallets.get(address);
     if (wallet) {
       wallet.balance = balance;
+    }
+  }
+
+  async updateWalletType(address: string, type: string): Promise<void> {
+    const wallet = this.wallets.get(address);
+    if (wallet) {
+      wallet.type = type as any;
     }
   }
 

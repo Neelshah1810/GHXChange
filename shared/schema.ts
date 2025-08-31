@@ -93,18 +93,22 @@ export type InsertCertificate = z.infer<typeof insertCertificateSchema>;
 export type Certificate = typeof certificates.$inferSelect;
 
 export const loginSchema = z.object({
-  username: z.string().min(1, "Username is required"),
+  username: z.string().min(1, "Username is required").trim(),
   password: z.string().min(1, "Password is required"),
-  role: z.enum(["producer", "buyer", "auditor"]),
+  role: z.enum(["producer", "buyer", "auditor"], {
+    errorMap: () => ({ message: "Please select a valid role (producer, buyer, or auditor)" })
+  }),
 });
 
 export const registerSchema = z.object({
-  username: z.string().min(3, "Username must be at least 3 characters"),
+  username: z.string().min(3, "Username must be at least 3 characters").trim(),
   password: z.string().min(6, "Password must be at least 6 characters"),
-  role: z.enum(["producer", "buyer", "auditor"]),
-  name: z.string().min(1, "Full name is required"),
-  email: z.string().email("Invalid email address").optional(),
-  location: z.string().min(1, "Location is required"),
+  role: z.enum(["producer", "buyer", "auditor"], {
+    errorMap: () => ({ message: "Please select a valid role (producer, buyer, or auditor)" })
+  }),
+  name: z.string().min(1, "Full name is required").trim(),
+  email: z.string().email("Invalid email address").trim().optional(),
+  location: z.string().min(1, "Location is required").trim(),
 });
 
 export const issueCreditsSchema = z.object({

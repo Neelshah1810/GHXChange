@@ -4,7 +4,6 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Coins, FlaskConical, Award, DollarSign } from "lucide-react";
-import { RoleSwitcher } from "@/components/role-switcher";
 import { Navigation } from "@/components/navigation";
 import { StatsCard } from "@/components/stats-card";
 import { TransactionTable } from "@/components/transaction-table";
@@ -128,16 +127,14 @@ export default function ProducerDashboard() {
             value={`${balance?.balance || wallet?.balance || 0} GHC`}
             icon={Coins}
             iconColor="bg-primary/10 text-primary"
-            change="+12% from last month"
-            changeType="positive"
+            subtitle="Available balance"
           />
           <StatsCard
             title="H₂ Produced"
             value={`${totalProduced} kg`}
             icon={FlaskConical}
             iconColor="bg-blue-500/10 text-blue-500"
-            change="+8% from last month"
-            changeType="positive"
+            subtitle="Total production"
           />
           <StatsCard
             title="Certificates"
@@ -151,14 +148,13 @@ export default function ProducerDashboard() {
             value={`₹${revenue.toLocaleString()}`}
             icon={DollarSign}
             iconColor="bg-green-500/10 text-green-500"
-            change="+15% from last month"
-            changeType="positive"
+            subtitle="Current value"
           />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Issue Credits Form */}
-          <div className="lg:col-span-1">
+          <div>
             <Card data-testid="issue-credits-form">
               <CardHeader>
                 <CardTitle className="text-lg font-semibold text-foreground">
@@ -249,23 +245,9 @@ export default function ProducerDashboard() {
             </Card>
           </div>
 
-          {/* Role Switcher */}
-          <Card data-testid="role-switcher">
-            <RoleSwitcher
-              currentRole="producer"
-              walletAddress={wallet!.address}
-              balance={balance?.balance || 0}
-              onRoleSwitch={(newRole) => {
-                queryClient.invalidateQueries();
-                if (newRole === 'buyer') {
-                  setLocation('/buyer/dashboard');
-                }
-              }}
-            />
-          </Card>
 
           {/* Recent Transactions */}
-          <div className="lg:col-span-2">
+          <div>
             <TransactionTable
               title="Recent Transactions"
               transactions={transactions.slice(0, 5)}

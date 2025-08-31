@@ -1,5 +1,5 @@
 import { apiRequest } from "./queryClient";
-import { LoginData, RegisterData, IssueCreditsData, TransferCreditsData, PurchaseCreditsData } from "@shared/schema";
+import { LoginData, RegisterData, IssueCreditsData, TransferCreditsData, PurchaseCreditsData, RoleSwitchData } from "@shared/schema";
 
 export const api = {
   auth: {
@@ -72,6 +72,17 @@ export const api = {
     },
     getProducers: async () => {
       const response = await apiRequest("GET", "/api/producers");
+      return response.json();
+    }
+  },
+
+  user: {
+    getRoles: async (walletAddress: string) => {
+      const response = await apiRequest("GET", `/api/users/${walletAddress}/roles`);
+      return response.json();
+    },
+    switchRole: async (data: RoleSwitchData) => {
+      const response = await apiRequest("POST", "/api/users/switch-role", data);
       return response.json();
     }
   }

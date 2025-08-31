@@ -108,7 +108,7 @@ export default function AuditorDashboard() {
 
   const handleFlagSuspicious = () => {
     const suspiciousTransactions = transactions.filter((tx: Transaction) => 
-      tx.amount > 1000 || // Large amounts
+      tx.amount > 2500 || // Large amounts (2.5k GHC threshold)
       (tx.txType === 'transfer' && Math.abs(new Date(tx.timestamp!).getTime() - Date.now()) < 60000) // Very recent transfers
     );
     
@@ -292,8 +292,7 @@ export default function AuditorDashboard() {
             value={`${stats?.totalIssued || 0} GHC`}
             icon={TrendingUp}
             iconColor="bg-primary/10 text-primary"
-            change={`+${Math.floor(Math.random() * 500 + 100)} this month`}
-            changeType="positive"
+            subtitle="System total"
           />
           <StatsCard
             title="Credits Retired"
@@ -307,8 +306,7 @@ export default function AuditorDashboard() {
             value={producers.length}
             icon={Factory}
             iconColor="bg-blue-500/10 text-blue-500"
-            change="+3 new this month"
-            changeType="positive"
+            subtitle="Currently registered"
           />
           <StatsCard
             title="Pending Verifications"

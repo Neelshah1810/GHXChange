@@ -4,6 +4,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "./lib/auth";
+import Home from "@/pages/home";
 import Login from "@/pages/login";
 import ProducerDashboard from "@/pages/producer-dashboard";
 import ProducerProduction from "@/pages/producer-production";
@@ -19,16 +20,16 @@ import NotFound from "@/pages/not-found";
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={Login} />
+      <Route path="/" component={Home} />
       <Route path="/login" component={Login} />
       
       {/* Producer Routes */}
-      <Route path="/producer" component={ProducerDashboard} />
+      <Route path="/producer/dashboard" component={ProducerDashboard} />
       <Route path="/producer/production" component={ProducerProduction} />
       <Route path="/producer/certificates" component={ProducerCertificates} />
       
       {/* Buyer Routes */}
-      <Route path="/buyer" component={BuyerDashboard} />
+      <Route path="/buyer/dashboard" component={BuyerDashboard} />
       <Route path="/buyer/marketplace" component={BuyerMarketplace} />
       <Route path="/buyer/compliance" component={BuyerCompliance} />
       
