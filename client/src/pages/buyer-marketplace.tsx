@@ -89,7 +89,7 @@ export default function BuyerMarketplace() {
     return certificates.filter((cert: any) => cert.producerAddress === producerAddress);
   };
 
-  const getAveragePrice = () => 2700; // Fixed price for demo (₹2,700 per GHC)
+  const getAveragePrice = () => 415; // Fixed price for demo (₹415 per GHC)
 
   return (
     <div className="min-h-screen bg-background role-buyer">
