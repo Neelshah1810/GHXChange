@@ -320,8 +320,8 @@ This project was developed for hackathons focusing on:
 
 ## 🔗 Links
 
-- **Live Demo**: (https://ghxchange.onrender.com)
-- **GitHub Repository**: (https://github.com/Neelshah1810/GHXChange)
+- **Live Demo**: https://ghxchange.onrender.com
+- **GitHub Repository**: https://github.com/Neelshah1810/GHXChange
 
 ## 📞 Contact
 
