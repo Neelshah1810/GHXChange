@@ -320,17 +320,28 @@ This project was developed for hackathons focusing on:
 
 ## 🔗 Links
 
-- **Live Demo**: [Coming Soon]
-- **Documentation**: [Wiki](../../wiki)
-- **Issues**: [GitHub Issues](../../issues)
-- **Discussions**: [GitHub Discussions](../../discussions)
+- **Live Demo**: (https://ghxchange.onrender.com)
+- **GitHub Repository**: (https://github.com/Neelshah1810/GHXChange)
 
 ## 📞 Contact
 
-- **Developer**: Neel Shah
-- **Email**: [your-email@example.com]
-- **LinkedIn**: [Your LinkedIn Profile]
-- **Project Link**: [https://github.com/yourusername/GreenHydrogenChain](https://github.com/yourusername/GreenHydrogenChain)
+- **Neel Shah**  
+  📧 Email: neelshah18102004@gmail.com 
+  🔗 LinkedIn: www.linkedin.com/in/neel-shah-077128300  
+
+- **Tirth Shah**  
+  📧 Email: 
+  🔗 LinkedIn:  
+
+- **Viranch Patel**  
+  📧 Email:  
+  🔗 LinkedIn:   
+
+- **Yashvi Patel**  
+  📧 Email: patelyashvi1311@gmail.com  
+  🔗 LinkedIn: https://www.linkedin.com/in/yashvi-patel-b17294300/ 
+
+---
 
 ---
 
