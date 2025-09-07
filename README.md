@@ -328,13 +328,11 @@ This project was developed for hackathons focusing on:
 You can use these credentials to log in and explore the platform:  
 
 - **Producer Demo Account** 
-  👤 username: producer1  🔑 Password: 12345678 | Role: Producer
+  👤 username: producer1 | 🔑 Password: 12345678 | Role: Producer
 
-- **Buyer Demo Account**  
-  👤 username: buyer1  🔑 Password: 12345678  | Role: Buyer
+- **Buyer Demo Account**  👤 username: buyer1 | 🔑 Password: 12345678  | Role: Buyer
 
-- **Auditor Demo Account**  
-  👤 username: auditor1  🔑 Password: 12345678 | Role: Auditor
+- **Auditor Demo Account**  👤 username: auditor1 | 🔑 Password: 12345678 | Role: Auditor
 
 ## 📞 Contact
 
