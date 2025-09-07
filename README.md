@@ -1,4 +1,4 @@
-# 🌱 GreenHydrogenChain
+# 🌱 GHXChange
 
 > **A blockchain-based platform for tracking, trading, and auditing green hydrogen credits with government-grade certification**
 
