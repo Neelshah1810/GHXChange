@@ -223,6 +223,51 @@ Certificates: id, production_record, certifier_signature, issue_date, status
 - **Trust**: Cryptographic proof eliminates fraud
 - **Compliance**: Built-in regulatory reporting capabilities
 
+
+## 🤖 Future Improvements (AI/ML & System Enhancements)
+
+### AIML Approach
+
+1. **Green Hydrogen Score Prediction (Regression)**
+   - Use regression models to predict a "Green Score" for hydrogen production based on energy source mix, CO₂ emissions, renewable intensity, and electrolyzer efficiency.
+
+   **Example Dataset:**
+   | Producer_ID | Energy_Source (%)     | CO₂_Emissions (kg/kg H₂) | Renewable_Intensity (kWh/kg H₂) | Electrolyzer_Efficiency (%) | Region  | Green_Score |
+   |-------------|-----------------------|---------------------------|---------------------------------|------------------------------|---------|-------------|
+   | P001        | Solar: 90, Grid: 10  | 0.5                       | 52                              | 72                           | India   | 85          |
+   | P002        | Grid: 100            | 9.0                       | 58                              | 65                           | EU      | 20          |
+   | P003        | Wind: 70, Hydro: 30  | 0.2                       | 49                              | 75                           | Brazil  | 92          |
+   | P004        | Coal: 80, Solar: 20  | 8.5                       | 60                              | 60                           | China   | 10          |
+
+2. **Anomaly Detection (Isolation Forest)**
+   - Detect fraudulent or unrealistic hydrogen production claims using anomaly detection.
+
+   **Example Dataset:**
+   | Index | Renewable % | CO₂ Emissions (kg/kg H₂) | Efficiency (%) | Claimed H₂ (kg) | Anomaly  |
+   |-------|-------------|---------------------------|----------------|-----------------|----------|
+   | 0     | 90          | 0.5                       | 72             | 950             | Normal   |
+   | 1     | 10          | 8.5                       | 40             | 2000            | Anomaly  |
+   | 2     | 70          | 0.3                       | 78             | 870             | Normal   |
+   | 3     | 85          | 0.6                       | 75             | 910             | Normal   |
+   | 4     | 95          | 0.4                       | 80             | 940             | Normal   |
+   | 5     | 5           | 9.0                       | 35             | 2500            | Anomaly  |
+
+3. **RAG (Retrieval Augmented Generation) for Analytics**
+   - Enable natural language queries for stakeholders:
+     - *“How many credits has Producer X retired this month?”*
+     - *“Which buyers purchased credits above Green Score 80?”*
+
+---
+
+### System Enhancements
+
+1. **KYB/Verification** of production for trusted onboarding  
+2. **Advanced Blockchain** integration with higher scalability and interoperability  
+3. **Full Block Tracking**: Create and track all blocks for the entire GHC lifecycle  
+4. **Producer Ranking** on the marketplace based on Green Score and transaction history  
+
+
+
 ## 🚀 Deployment
 
 ### Production Build
