@@ -2,7 +2,7 @@
 
 > **A blockchain-based platform for tracking, trading, and auditing green hydrogen credits with government-grade certification**
 
-[![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
+[![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Node.js](https://img.shields.io/badge/Node.js-16%2B-brightgreen)](https://nodejs.org/)
 [![React](https://img.shields.io/badge/React-18-blue)](https://reactjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)](https://www.typescriptlang.org/)
