@@ -326,20 +326,19 @@ This project was developed for hackathons focusing on:
 ## 📞 Contact
 
 - **Neel Shah**  
-  📧 Email: neelshah18102004@gmail.com 
-  🔗 LinkedIn: www.linkedin.com/in/neel-shah-077128300  
+  📧 Email:  neelshah18102004@gmail.com 
+  🔗 LinkedIn:  www.linkedin.com/in/neel-shah-077128300  
 
 - **Tirth Shah**  
-  📧 Email: 
-  🔗 LinkedIn:  
+  📧 Email:  tirthshah151004@gmail.com
+  🔗 LinkedIn:  http://linkedin.com/in/tirth-shah-533517216
 
 - **Viranch Patel**  
-  📧 Email:  
-  🔗 LinkedIn:   
+  📧 Email:  viranchvishalpatel@gmail.com
+  🔗 LinkedIn:   http://linkedin.com/in/viranch-patel-430391315
 
 - **Yashvi Patel**  
-  📧 Email: patelyashvi1311@gmail.com  
-  🔗 LinkedIn: https://www.linkedin.com/in/yashvi-patel-b17294300/ 
+  📧 Email:  patelyashvi1311@gmail.com  🔗 LinkedIn:  https://www.linkedin.com/in/yashvi-patel-b17294300/ 
 
 ---
 
