@@ -1,0 +1,298 @@
+# 🌱 GreenHydrogenChain
+
+> **A blockchain-based platform for tracking, trading, and auditing green hydrogen credits with government-grade certification**
+
+[![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
+[![Node.js](https://img.shields.io/badge/Node.js-16%2B-brightgreen)](https://nodejs.org/)
+[![React](https://img.shields.io/badge/React-18-blue)](https://reactjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)](https://www.typescriptlang.org/)
+[![Ethereum](https://img.shields.io/badge/Ethereum-Compatible-purple)](https://ethereum.org/)
+
+## 🚀 Overview
+
+GreenHydrogenChain is a comprehensive blockchain-based system designed to bring transparency, trust, and efficiency to the green hydrogen credit market. Our platform addresses the critical challenges of verification, double counting prevention, and regulatory compliance in the rapidly growing $12 billion green hydrogen industry.
+
+### 🎯 Key Features
+
+- **🏛️ Government Certification**: RSA-signed digital certificates for production verification
+- **⛓️ Blockchain Integration**: Real Ethereum-compatible wallet and transaction system
+- **👥 Multi-Stakeholder Platform**: Dedicated dashboards for producers, buyers, and auditors
+- **🔒 Fraud Prevention**: Immutable transaction records with cryptographic verification
+- **📊 Real-time Trading**: Instant credit transfers with live balance updates
+- **🌍 Environmental Impact**: Complete lifecycle tracking from production to retirement
+- **🔍 Full Transparency**: Blockchain explorer for system-wide auditability
+
+## 🏗️ Architecture
+
+### System Components
+
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Frontend      │    │    Backend      │    │   Blockchain    │
+│   (React)       │◄──►│  (Express.js)   │◄──►│  (Ethereum)     │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+         │                       │                       │
+         ▼                       ▼                       ▼
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   UI/UX Layer   │    │   Database      │    │   Wallet Mgmt   │
+│  (Tailwind CSS) │    │ (PostgreSQL)    │    │   (Web3.js)     │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+```
+
+### Tech Stack
+
+#### Frontend
+- **React 18** with TypeScript for type-safe development
+- **Vite** for fast builds and hot module replacement
+- **shadcn/ui** components built on Radix UI primitives
+- **TailwindCSS** for responsive, utility-first styling
+- **Wouter** for lightweight client-side routing
+- **TanStack Query** for server state management
+
+#### Backend
+- **Express.js** with TypeScript for REST API
+- **PostgreSQL** with Drizzle ORM for type-safe database operations
+- **bcrypt** for secure password hashing
+- **Express Session** for authentication management
+
+#### Blockchain & Security
+- **Web3.js** for Ethereum blockchain interaction
+- **eth-account** for wallet management and signatures
+- **RSA Cryptography** for government certificate signing
+- **Zod** for runtime type validation
+
+## 🚦 Getting Started
+
+### Prerequisites
+
+- **Node.js** 16+ 
+- **PostgreSQL** database
+- **npm** or **yarn** package manager
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/GreenHydrogenChain.git
+   cd GreenHydrogenChain
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Set up environment variables**
+   ```bash
+   # Create .env file
+   DATABASE_URL="postgresql://user:password@localhost:5432/ghc_db"
+   NODE_ENV="development"
+   SESSION_SECRET="your-secret-key"
+   ```
+
+4. **Set up the database**
+   ```bash
+   npm run db:push
+   ```
+
+5. **Start the development server**
+   ```bash
+   npm run dev
+   ```
+
+6. **Access the application**
+   - Frontend: http://localhost:5173
+   - Backend API: http://localhost:3000
+
+## 📱 User Roles & Features
+
+### 🏭 Producer Dashboard
+- **Production Records**: Create verified hydrogen production entries
+- **Certificate Management**: Government-issued digital certificates
+- **Credit Issuance**: Automatic GHC credit generation upon verification
+- **Transaction History**: Complete audit trail of all activities
+
+### 💼 Buyer Dashboard  
+- **Credit Marketplace**: Browse and purchase verified green hydrogen credits
+- **Compliance Tracking**: Monitor purchased credits for regulatory reporting
+- **Wallet Management**: Ethereum-compatible wallet integration
+- **Certificate Verification**: Real-time authenticity checking
+
+### 🔍 Auditor Dashboard
+- **System Oversight**: System-wide transaction monitoring
+- **Fraud Prevention**: Double counting detection and prevention
+- **Reporting Tools**: Comprehensive audit reports and analytics
+- **Certificate Validation**: Government signature verification
+
+## 🔧 API Endpoints
+
+### Authentication
+```http
+POST /api/auth/login
+POST /api/auth/register
+GET  /api/auth/me
+POST /api/auth/logout
+```
+
+### Transactions
+```http
+GET  /api/transactions
+POST /api/transactions/transfer
+POST /api/transactions/issue
+POST /api/transactions/retire
+```
+
+### Certificates
+```http
+GET  /api/certificates
+POST /api/certificates
+GET  /api/certificates/:id/verify
+```
+
+### Wallets
+```http
+GET  /api/wallets
+POST /api/wallets
+GET  /api/wallets/:address/balance
+```
+
+## 🧪 Testing
+
+### Run the test suite
+```bash
+npm test
+```
+
+### Manual Testing
+1. **Create Producer Account**: Register as a hydrogen producer
+2. **Generate Production Record**: Add hydrogen production data
+3. **Government Certification**: Automatic certificate issuance
+4. **Credit Transfer**: Transfer credits between wallets
+5. **Credit Retirement**: Retire credits for compliance
+
+## 🌟 Demo Scenario
+
+The system includes a demo data loader for quick testing:
+
+1. **Demo Wallets**: 
+   - Solar Hydrogen Inc (Producer)
+   - Green Steel Corp (Buyer)
+
+2. **Sample Production**: 500kg hydrogen from solar PV in Gujarat
+3. **Government Certificate**: Automatically issued and verified
+4. **Credit Trading**: Live transfer demonstration
+5. **Environmental Impact**: Retirement tracking
+
+## 📊 Database Schema
+
+### Core Tables
+
+```sql
+-- Users with role-based access
+Users: id, email, password_hash, role, wallet_address, created_at
+
+-- Blockchain wallet management
+Wallets: id, address, private_key, balance, owner_id
+
+-- Immutable transaction records
+Transactions: id, from_address, to_address, amount, tx_type, tx_hash, timestamp
+
+-- Government certificates
+Certificates: id, production_record, certifier_signature, issue_date, status
+```
+
+## 🔐 Security Features
+
+- **Government-Grade Certificates**: RSA-2048 digital signatures
+- **Blockchain Verification**: Ethereum-compatible transaction signing
+- **Role-Based Access Control**: Producer, Buyer, Auditor permissions
+- **Immutable Records**: Tamper-proof blockchain storage
+- **Secure Authentication**: Bcrypt password hashing + session management
+
+## 🌍 Environmental Impact
+
+### Green Hydrogen Benefits
+- **Zero Emissions**: Produced using renewable energy sources
+- **Industrial Decarbonization**: Enables clean steel, cement, and chemical production
+- **Energy Storage**: Stores renewable energy for later use
+- **Transport Fuel**: Clean alternative for heavy-duty vehicles
+
+### Platform Benefits
+- **Transparency**: Full lifecycle tracking reduces greenwashing
+- **Efficiency**: Automated verification reduces administrative overhead
+- **Trust**: Cryptographic proof eliminates fraud
+- **Compliance**: Built-in regulatory reporting capabilities
+
+## 🚀 Deployment
+
+### Production Build
+```bash
+npm run build
+npm run start
+```
+
+### Environment Configuration
+```bash
+# Production environment variables
+NODE_ENV=production
+DATABASE_URL=your-production-db-url
+SESSION_SECRET=secure-production-secret
+```
+
+### Recommended Infrastructure
+- **Frontend**: Vercel, Netlify, or AWS S3 + CloudFront
+- **Backend**: Railway, Heroku, or AWS EC2
+- **Database**: Neon, Supabase, or AWS RDS PostgreSQL
+- **Monitoring**: Sentry for error tracking
+
+## 🤝 Contributing
+
+We welcome contributions! Please follow these steps:
+
+1. **Fork the repository**
+2. **Create a feature branch** (`git checkout -b feature/amazing-feature`)
+3. **Commit your changes** (`git commit -m 'Add amazing feature'`)
+4. **Push to the branch** (`git push origin feature/amazing-feature`)
+5. **Open a Pull Request**
+
+### Development Guidelines
+- Follow TypeScript best practices
+- Write tests for new features
+- Update documentation as needed
+- Follow the existing code style
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🏆 Hackathon Achievements
+
+This project was developed for hackathons focusing on:
+- **🌱 Sustainability**: Enabling green hydrogen market transparency
+- **⛓️ Blockchain**: Real-world Web3 application with Ethereum integration  
+- **🏛️ RegTech**: Government compliance and certification
+- **💡 Innovation**: Novel approach to carbon credit verification
+
+## 🔗 Links
+
+- **Live Demo**: [Coming Soon]
+- **Documentation**: [Wiki](../../wiki)
+- **Issues**: [GitHub Issues](../../issues)
+- **Discussions**: [GitHub Discussions](../../discussions)
+
+## 📞 Contact
+
+- **Developer**: Viranch Patel
+- **Email**: [your-email@example.com]
+- **LinkedIn**: [Your LinkedIn Profile]
+- **Project Link**: [https://github.com/yourusername/GreenHydrogenChain](https://github.com/yourusername/GreenHydrogenChain)
+
+---
+
+<div align="center">
+
+**⭐ Star this repository if you find it useful!**
+
+*Built with ❤️ for a sustainable future*
+
+</div>
