@@ -323,6 +323,19 @@ This project was developed for hackathons focusing on:
 - **Live Demo**: https://ghxchange.onrender.com
 - **GitHub Repository**: https://github.com/Neelshah1810/GHXChange
 
+### 🧪 Demo Sign-In (for testing)  
+
+You can use these credentials to log in and explore the platform:  
+
+- **Producer Demo Account** 
+  👤 username: producer1  🔑 Password: 12345678 | Role: Producer
+
+- **Buyer Demo Account**  
+  👤 username: buyer1  🔑 Password: 12345678  | Role: Buyer
+
+- **Auditor Demo Account**  
+  👤 username: auditor1  🔑 Password: 12345678 | Role: Auditor
+
 ## 📞 Contact
 
 - **Neel Shah**  
