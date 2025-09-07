@@ -73,7 +73,7 @@ GreenHydrogenChain is a comprehensive blockchain-based system designed to bring 
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/GreenHydrogenChain.git
+   git clone https://github.com/Neelshah1810/GHXChange.git
    cd GreenHydrogenChain
    ```
 
@@ -282,7 +282,7 @@ This project was developed for hackathons focusing on:
 
 ## 📞 Contact
 
-- **Developer**: Viranch Patel
+- **Developer**: Neel Shah
 - **Email**: [your-email@example.com]
 - **LinkedIn**: [Your LinkedIn Profile]
 - **Project Link**: [https://github.com/yourusername/GreenHydrogenChain](https://github.com/yourusername/GreenHydrogenChain)
